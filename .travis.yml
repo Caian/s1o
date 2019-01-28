@@ -1,0 +1,105 @@
+dist: trusty
+sudo: false
+language: cpp
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-6
+      - git
+
+before_install:
+  # Set the extra prefix for external libraries and tools
+  - export EXTRA_DIR="$PWD/extra"
+  - mkdir -p "$EXTRA_DIR"
+  - pushd "$EXTRA_DIR"
+  # Set the prefix used to install googletest, set the source
+  # directory and get the source code
+  - export GTEST_DIR="$EXTRA_DIR/googletest"
+  - export GTEST_SRC_DIR="$GTEST_DIR/source"
+  - mkdir -p "$GTEST_DIR" "$GTEST_SRC_DIR"
+  - pushd "$GTEST_SRC_DIR"
+  - git clone --depth 1 'https://github.com/google/googletest.git' -b v1.8.x .
+  # Exit gtest
+  - popd
+  # Get LLCOV
+  - export LCOV_DIR="$EXTRA_DIR/lcov"
+  - mkdir -p "$LCOV_DIR"
+  - pushd "$LCOV_DIR"
+  - wget https://github.com/linux-test-project/lcov/archive/v1.12.zip
+  - unzip v1.12.zip
+  - LCOV="$PWD/lcov-1.12/bin/lcov --gcov-tool gcov-6"
+  # Exit LLCOV
+  - popd
+  # Get boost
+  - wget https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.gz
+  - tar -xzf boost_1_69_0.tar.gz
+  - rm boost_1_69_0.tar.gz
+  - export BOOST_DIR="$EXTRA_DIR/boost"
+  - mv "boost_1_69_0/boost" "$BOOST_DIR"
+  # No need to exit boost
+  # Get EX3
+  - export EX3_DIR="$EXTRA_DIR/ex3"
+  - mkdir -p "$EX3_DIR"
+  - pushd "$EX3_DIR"
+  - git clone --depth 1 'https://github.com/Caian/ex3' -b master .
+  # Exit EX3
+  - popd
+  # Get Z0RG
+  - export Z0RG_DIR="$EXTRA_DIR/z0rg"
+  - mkdir -p "$Z0RG_DIR"
+  - pushd "$Z0RG_DIR"
+  - git clone --depth 1 'https://github.com/Caian/z0rg' -b master .
+  # Exit Z0RG
+  - popd
+  # Exit extra
+  - popd
+
+before_script:
+  # Build and install googletest
+  - pushd "$GTEST_SRC_DIR"
+  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$GTEST_DIR" .
+  - make -j
+  - make install
+  - popd
+
+script:
+  # Save some directories
+  - export PROJECT_DIR="$PWD"
+  - export TEST_SRC_DIR="$PROJECT_DIR/test"
+  - export BUILD_DIR="$PROJECT_DIR/build"
+  # Print some information
+  - echo "Current dir is $PWD"
+  - echo "GTest dir is $GTEST_DIR"
+  - echo "Boost dir is $BOOST_DIR"
+  - echo "Ex3 dir is $EX3_DIR"
+  - echo "Z0rg dir is $Z0RG_DIR"
+  # Set compiler
+  - export CXX=/usr/bin/g++-6
+  # Set compiler flags
+  - export CXXFLAGS="-std=c++98 -Wall -Wextra -Wconversion"
+  - export CXXFLAGS="$CXXFLAGS -I$PROJECT_DIR/.."
+  - export CXXFLAGS="$CXXFLAGS -I$GTEST_DIR/include"
+  - export CXXFLAGS="$CXXFLAGS -I$EXTRA_DIR"
+  # Set linker flags
+  - export LDFLAGS="-lgtest_main -lgtest -lpthread -ldl -L$GTEST_DIR/lib"
+  # Set coverage flags
+  - export COVFLAGS="--coverage"
+  # Create the build directory
+  - mkdir -p "$BUILD_DIR" && pushd "$BUILD_DIR"
+  # Build and run the tests
+  - $CXX $CXXFLAGS "$TEST_SRC_DIR"/*.cpp -o test $LDFLAGS $COVFLAGS
+  - ./test
+  - popd
+
+after_success:
+  # Set the coverage file name for lcov
+  - export COVERAGE_FILE="$PWD/coverage.info"
+  # Run lcov on the generated coverage data
+  - $LCOV --directory "$BUILD_DIR" --base-directory "$PROJECT_DIR" --capture --output-file "$COVERAGE_FILE"
+  # Keep only the project headers in the coverage data by
+  # removing the tests themselves and the extra libraries
+  - $LCOV --remove "$COVERAGE_FILE" "/usr*" "$TEST_SRC_DIR/*" "$EXTRA_DIR/*" -o "$COVERAGE_FILE"
+  - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
