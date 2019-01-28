@@ -90,7 +90,7 @@ script:
   # Create the build directory
   - mkdir -p "$BUILD_DIR" && pushd "$BUILD_DIR"
   # Build and run the tests
-  - $CXX $CXXFLAGS "$TEST_SRC_DIR"/test*.cpp -o test $LDFLAGS $COVFLAGS
+  - $CXX $CXXFLAGS "$TEST_SRC_DIR"/*.cpp -o test $LDFLAGS $COVFLAGS
   - ./test
   - popd
 
