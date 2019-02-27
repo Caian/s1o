@@ -2407,6 +2407,107 @@ private:
             >(_spatial_adapter.send_update(_spatial_storage), this);
     }
 
+    /**
+     * @brief Get the iterator to the beginning of the metadata-data pairs
+     * that satisfy a set of predicates, at data slot 0.
+     *
+     * @tparam Predicates The type representing the predicates to be satisfied
+     * by the elements in the storage.
+     *
+     * @param predicates The predicates to be satisfied by the elements in the
+     * storage.
+     *
+     * @return elem_q_iterator The iterator to the beginning of the
+     * metadata-data pairs that satisfy a set of predicates, at data slot 0.
+     *
+     * @note This method will throw an exception if the dataset is open with
+     * the RWP flag.
+     *
+     * @note This method will throw an exception if the dataset is open with
+     * the NO_DATA flag.
+     */
+    template<typename Predicates>
+    inline elem_q_iterator _begin_query_elements(
+        const Predicates& predicates
+    ) const
+    {
+        assert_has_location_data();
+        assert_has_data();
+
+        return iter_builder::template construct_in_iterator<
+            typename iter_builder::elem_q_iterator,
+            typename iter_builder::transform_q_get_elem
+            >(_spatial_adapter.qbegin(_spatial_storage, predicates), this);
+    }
+
+    /**
+     * @brief Get the iterator to the beginning of the metadata-data pairs
+     * that satisfy a set of predicates, with data slot selection.
+     *
+     * @tparam Predicates The type representing the predicates to be satisfied
+     * by the elements in the storage.
+     *
+     * @param predicates The predicates to be satisfied by the elements in the
+     * storage.
+     * @param slot The slot of data to iterate over.
+     *
+     * @return elem_q_iterator_slot The iterator to the beginning of the
+     * metadata-data pairs that satisfy a set of predicates, with data slot
+     * selection.
+     *
+     * @note This method will throw an exception if the dataset is open with
+     * the RWP flag.
+     *
+     * @note This method will throw an exception if the dataset is open with
+     * the NO_DATA flag.
+     */
+    template<typename Predicates>
+    inline elem_q_iterator_slot _begin_query_elements(
+        const Predicates& predicates,
+        size_t slot
+    ) const
+    {
+        assert_has_location_data();
+        assert_has_data();
+
+        const size_t slot_off = compute_slot_offset(slot);
+
+        return iter_builder::template construct_in_iterator<
+            typename iter_builder::elem_q_iterator_slot,
+            typename iter_builder::transform_q_get_elem_slot
+            >(_spatial_adapter.qbegin(_spatial_storage, predicates),
+            this, slot_off);
+    }
+
+    /**
+     * @brief Get the iterator to the beginning of the metadata objects that
+     * satisfy a set of predicates.
+     *
+     * @tparam Predicates The type representing the predicates to be satisfied
+     * by the elements in the storage.
+     *
+     * @param predicates The predicates to be satisfied by the elements in the
+     * storage.
+     *
+     * @return meta_q_iterator The iterator to the beginning of the metadata
+     * objects that satisfy a set of predicates.
+     *
+     * @note This method will throw an exception if the dataset is open with
+     * the RWP flag.
+     */
+    template<typename Predicates>
+    inline meta_q_iterator _begin_query_metadata(
+        const Predicates& predicates
+    ) const
+    {
+        assert_has_location_data();
+
+        return iter_builder::template construct_in_iterator<
+            typename iter_builder::meta_q_iterator,
+            typename iter_builder::transform_q_get_meta
+            >(_spatial_adapter.qbegin(_spatial_storage, predicates), this);
+    }
+
 public:
 
     /**
@@ -3452,39 +3553,6 @@ public:
     }
 
     /**
-     * @brief Get the iterator to the beginning of the metadata-data pairs
-     * that satisfy a set of predicates, at data slot 0.
-     *
-     * @tparam Predicates The type representing the predicates to be satisfied
-     * by the elements in the storage.
-     *
-     * @param predicates The predicates to be satisfied by the elements in the
-     * storage.
-     *
-     * @return elem_q_iterator The iterator to the beginning of the
-     * metadata-data pairs that satisfy a set of predicates, at data slot 0.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the RWP flag.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the NO_DATA flag.
-     */
-    template<typename Predicates>
-    inline elem_q_iterator _begin_query_elements(
-        const Predicates& predicates
-    ) const
-    {
-        assert_has_location_data();
-        assert_has_data();
-
-        return iter_builder::template construct_in_iterator<
-            typename iter_builder::elem_q_iterator,
-            typename iter_builder::transform_q_get_elem
-            >(_spatial_adapter.qbegin(_spatial_storage, predicates), this);
-    }
-
-    /**
      * @brief Get the iterator to the end of the metadata-data pairs that
      * satisfy a set of predicates, at data slot 0.
      *
@@ -3506,45 +3574,6 @@ public:
             typename iter_builder::elem_q_iterator,
             typename iter_builder::transform_q_get_elem
             >(_spatial_adapter.qend(_spatial_storage), this);
-    }
-
-    /**
-     * @brief Get the iterator to the beginning of the metadata-data pairs
-     * that satisfy a set of predicates, with data slot selection.
-     *
-     * @tparam Predicates The type representing the predicates to be satisfied
-     * by the elements in the storage.
-     *
-     * @param predicates The predicates to be satisfied by the elements in the
-     * storage.
-     * @param slot The slot of data to iterate over.
-     *
-     * @return elem_q_iterator_slot The iterator to the beginning of the
-     * metadata-data pairs that satisfy a set of predicates, with data slot
-     * selection.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the RWP flag.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the NO_DATA flag.
-     */
-    template<typename Predicates>
-    inline elem_q_iterator_slot _begin_query_elements(
-        const Predicates& predicates,
-        size_t slot
-    ) const
-    {
-        assert_has_location_data();
-        assert_has_data();
-
-        const size_t slot_off = compute_slot_offset(slot);
-
-        return iter_builder::template construct_in_iterator<
-            typename iter_builder::elem_q_iterator_slot,
-            typename iter_builder::transform_q_get_elem_slot
-            >(_spatial_adapter.qbegin(_spatial_storage, predicates),
-            this, slot_off);
     }
 
     /**
@@ -3576,35 +3605,6 @@ public:
             typename iter_builder::elem_q_iterator_slot,
             typename iter_builder::transform_q_get_elem_slot
             >(_spatial_adapter.qend(_spatial_storage), this, slot_off);
-    }
-
-    /**
-     * @brief Get the iterator to the beginning of the metadata objects that
-     * satisfy a set of predicates.
-     *
-     * @tparam Predicates The type representing the predicates to be satisfied
-     * by the elements in the storage.
-     *
-     * @param predicates The predicates to be satisfied by the elements in the
-     * storage.
-     *
-     * @return meta_q_iterator The iterator to the beginning of the metadata
-     * objects that satisfy a set of predicates.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the RWP flag.
-     */
-    template<typename Predicates>
-    inline meta_q_iterator _begin_query_metadata(
-        const Predicates& predicates
-    ) const
-    {
-        assert_has_location_data();
-
-        return iter_builder::template construct_in_iterator<
-            typename iter_builder::meta_q_iterator,
-            typename iter_builder::transform_q_get_meta
-            >(_spatial_adapter.qbegin(_spatial_storage, predicates), this);
     }
 
     /**
