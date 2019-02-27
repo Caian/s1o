@@ -21,11 +21,10 @@
 #pragma once
 
 #include <s1o/types.hpp>
+#include <s1o/exceptions.hpp>
 #include <s1o/transforms/transform_deref.hpp>
 #include <s1o/transforms/transform_get_tuple_element.hpp>
 #include <s1o/helpers/rtree_indexer_byval.hpp>
-
-#include <s1o/exceptions.hpp>
 
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/point.hpp>
