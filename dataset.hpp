@@ -96,7 +96,7 @@ enum dataset_flags
     S1O_FLAGS_NO_DATA_CHECK = 8,
 };
 
-#pragma pack(4)
+#pragma pack(push, 4)
 struct meta_base_structure
 {
     unsigned int one;      //  0 - 3
@@ -108,6 +108,7 @@ struct meta_base_structure
     unsigned int revision; // 24 - 27
     char magic[8];         // 28 - 35
 };
+#pragma pack(pop)
 
 /**
  * @brief Representation of a memory region.
