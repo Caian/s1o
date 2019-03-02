@@ -36,7 +36,7 @@ struct transform_ds_get_element
     typedef uid_t input_type;
 
     /** The return type of the functor. */
-    typedef typename dataset_impl::node_data value_type;
+    typedef typename dataset_impl::element_pair value_type;
 
     /** The reference type of the functor. */
     typedef value_type reference;

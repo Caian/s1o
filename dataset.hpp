@@ -26,7 +26,7 @@
 #include "exceptions.hpp"
 #include "traits/metadata_type.hpp"
 #include "traits/num_spatial_dims.hpp"
-#include "traits/supports_node_data.hpp"
+#include "traits/supports_element_pair.hpp"
 #include "traits/spatial_value_type.hpp"
 #include "traits/spatial_point_type.hpp"
 #include "traits/spatial_adapter_impl.hpp"
@@ -995,7 +995,7 @@ public:
  *
  * @note TSpatialAdapterImpl must be compatible with the following traits:
  *
- *  - supports_node_data
+ *  - supports_element_pair
  *  - spatial_point_type
  *  - spatial_storage_type
  *  - spatial_storage_iterator_type
@@ -1065,13 +1065,13 @@ public:
 
     /** The inner type used to store data in each node of the
         spatial structure. */
-    typedef std::pair<metadata_type*, char*> node_data;
+    typedef std::pair<metadata_type*, char*> element_pair;
 
     /** The specialization of the helper type used to interface the spatial
         storage structure with the dataset. */
     typedef typename s1o::traits::spatial_adapter_impl<
         TSpatialAdapter,
-        node_data,
+        element_pair,
         spatial_value_type,
         num_spatial_dims
         >::type TSpatialAdapterImpl;
@@ -1182,7 +1182,7 @@ public:
     /** Allow the helper direct access to the private typedefs. */
     friend class helpers::iter_builder<
         this_type,
-        traits::supports_node_data<
+        traits::supports_element_pair<
             TSpatialAdapterImpl
             >::value
         >;
@@ -1191,7 +1191,7 @@ public:
         adapter's support for node data. */
     typedef helpers::iter_builder<
         this_type,
-        traits::supports_node_data<
+        traits::supports_element_pair<
             TSpatialAdapterImpl
             >::value
         > iter_builder;
@@ -2053,7 +2053,7 @@ private:
             for (ssit = ssbegin; ssit != ssend; ssit++) {
 
                 // Get the pointer to the metadata's data
-                const node_data& data = *ssit;
+                const element_pair& data = *ssit;
                 const char* data_ptr = data.second;
 
                 if (data_ptr < last_ptr) {
@@ -3803,7 +3803,7 @@ public:
      *
      * @param point The exact spatial location to find the element.
      *
-     * @return node_data The metadata-data pair corresponding to the element
+     * @return element_pair The metadata-data pair corresponding to the element
      * at an specific spatial location, at data slot 0.
      *
      * @note This method will throw an exception if the dataset is open with
@@ -3815,7 +3815,7 @@ public:
      * @note This method will throw an exception if there is no element at the
      * specified location
      */
-    inline node_data find_element(
+    inline element_pair find_element(
         const spatial_point_type& point
     ) const
     {
@@ -3836,7 +3836,7 @@ public:
                 << dataset_name(get_basename()));
         }
 
-        const node_data& element = *begin;
+        const element_pair& element = *begin;
 
         if (++begin != end) {
 
@@ -3886,7 +3886,7 @@ public:
      * @param point The exact spatial location to find the element.
      * @param slot The slot of data to access.
      *
-     * @return node_data The metadata-data pair corresponding to the element
+     * @return element_pair The metadata-data pair corresponding to the element
      * at an specific spatial location, with data slot selection.
      *
      * @note This method will throw an exception if the dataset is open with
@@ -3898,7 +3898,7 @@ public:
      * @note This method will throw an exception if there is no element at the
      * specified location
      */
-    inline node_data find_element(
+    inline element_pair find_element(
         const spatial_point_type& point,
         size_t slot
     ) const
@@ -3920,7 +3920,7 @@ public:
                 << dataset_name(get_basename()));
         }
 
-        const node_data& element = *begin;
+        const element_pair& element = *begin;
 
         if (++begin != end) {
 

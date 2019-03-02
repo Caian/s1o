@@ -24,9 +24,9 @@ namespace s1o {
 namespace traits {
 
 template <typename T>
-struct supports_node_data
+struct supports_element_pair
 {
-    static const bool value = T::supports_node_data;
+    static const bool value = T::supports_element_pair;
 };
 
 }}

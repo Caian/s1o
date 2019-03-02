@@ -51,7 +51,7 @@ struct iter_builder<dataset_impl, true>
     typedef transform_get_element_slot<
         typename dataset_impl::TSpatialAdapterImpl,
         typename dataset_impl::spatial_storage_iterator,
-        typename dataset_impl::node_data
+        typename dataset_impl::element_pair
         > transform_l_get_elem_slot;
 
     /** The transform used to get a the metadata of an element given its
@@ -70,7 +70,7 @@ struct iter_builder<dataset_impl, true>
     typedef transform_get_element_slot<
         typename dataset_impl::TSpatialAdapterImpl,
         typename dataset_impl::spatial_storage_query_iterator,
-        typename dataset_impl::node_data
+        typename dataset_impl::element_pair
         > transform_q_get_elem_slot;
 
     /** The initialization data transform type used to get a metadata-data

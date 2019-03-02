@@ -32,7 +32,7 @@ namespace s1o {
  * interface the spatial storage structure with the dataset.
  * @tparam spatial_iterator The type of the spatial iterator used to retrieve
  * the nodes.
- * @tparam node_data The inner type used to store data in each node of the
+ * @tparam element_pair The inner type used to store data in each node of the
  * spatial structure.
  */
 template <
