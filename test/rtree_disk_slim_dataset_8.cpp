@@ -191,7 +191,7 @@ DATASET_TEST(MultipleSlot, QueryNearestElem)
         ASSERT_NO_THROW(dataset.get_meta_adapter().
             get_location(stuff[Who], point2));
 
-        test::my_dataset::node_data elem;
+        test::my_dataset::element_pair elem;
 
         ASSERT_THROW(dataset.find_element(point1),
             s1o::location_mismatch_exception);
@@ -287,7 +287,7 @@ DATASET_TEST(MultipleSlot, QueryNearestElemSlot)
         ASSERT_NO_THROW(dataset.get_meta_adapter().
             get_location(stuff[Who], point2));
 
-        test::my_dataset::node_data elem;
+        test::my_dataset::element_pair elem;
 
         ASSERT_THROW(dataset.find_element(point1, slots),
             s1o::invalid_slot_exception);

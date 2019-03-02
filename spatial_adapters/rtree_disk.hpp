@@ -73,7 +73,7 @@ struct spatial_adapter_impl
 {
     /** The flag to indicate that this adapter can handle node data
         directly. */
-    static const bool supports_node_data = true;
+    static const bool supports_element_pair = true;
 
     /** The specialization of the current type. */
     typedef spatial_adapter_impl<TData, TSval, NSDims> this_type;

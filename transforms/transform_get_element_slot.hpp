@@ -32,13 +32,13 @@ namespace s1o {
  * interface the spatial storage structure with the dataset.
  * @tparam spatial_iterator The type of the spatial iterator used to retrieve
  * the nodes.
- * @tparam node_data The inner type used to store data in each node of the
+ * @tparam element_pair The inner type used to store data in each node of the
  * spatial structure.
  */
 template <
     typename TSpatialAdapterImpl,
     typename spatial_iterator,
-    typename node_data
+    typename element_pair
     >
 struct transform_get_element_slot
 {
@@ -48,7 +48,7 @@ struct transform_get_element_slot
         >::value_type input_type;
 
     /** The return type of the functor. */
-    typedef node_data value_type;
+    typedef element_pair value_type;
 
     /** The reference type of the functor. */
     typedef value_type reference;
@@ -69,7 +69,7 @@ struct transform_get_element_slot
         const input_type& val
     ) const
     {
-        return node_data(val.first,
+        return element_pair(val.first,
             val.second + _slot_offset);
     }
 
