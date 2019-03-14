@@ -292,8 +292,8 @@ struct spatial_adapter_impl
     }
 
     /**
-     * @brief Get the iterator to the beginning of a sequence of elements that
-     * satisfy the predicates.
+     * @brief Get the iterators to the beginning and end of a sequence of
+     * elements that satisfy the predicates.
      *
      * @tparam Predicates The type representing the predicates to be satisfied
      * by the elements in the storage.
@@ -301,33 +301,21 @@ struct spatial_adapter_impl
      * @param st A reference to the spatial storage object.
      * @param predicates The predicates to be satisfied by the elements in the
      * storage.
-     *
-     * @return tuple_get_second_q_iterator the iterator to the beginning of a
-     * sequence of elements that satisfy the predicates.
+     * @param begin The resulting iterator to the beginning of a sequence of
+     * elements that satisfy the predicates.
+     * @param end The resulting iterator to the end of a sequence of elements
+     * that satisfy the predicates.
      */
     template<typename Predicates>
-    inline tuple_get_second_q_iterator qbegin(
+    void query(
         const rtree_store& st,
-        const Predicates& predicates
+        const Predicates& predicates,
+        tuple_get_second_q_iterator& begin,
+        tuple_get_second_q_iterator& end
     ) const
     {
-        return tuple_get_second_q_iterator(st.qbegin(predicates));
-    }
-
-    /**
-     * @brief Get the iterator to the end of the sequence of elements that
-     * satisfy the predicates.
-     *
-     * @param st A reference to the spatial storage object.
-     *
-     * @return tuple_get_second_q_iterator The iterator to the end of a
-     * sequence of elements that satisfy the predicates.
-     */
-    inline tuple_get_second_q_iterator qend(
-        const rtree_store& st
-    ) const
-    {
-        return tuple_get_second_q_iterator(st.qend());
+        begin = tuple_get_second_q_iterator(st.qbegin(predicates));
+        end = tuple_get_second_q_iterator(st.qend());
     }
 
     /**
