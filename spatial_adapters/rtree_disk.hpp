@@ -618,8 +618,8 @@ struct spatial_adapter_impl
     }
 
     /**
-     * @brief Get the iterator to the beginning of a sequence of elements that
-     * satisfy the predicates.
+     * @brief Get the iterators to the beginning and end of a sequence of
+     * elements that satisfy the predicates.
      *
      * @tparam Predicates The type representing the predicates to be satisfied
      * by the elements in the storage.
@@ -627,35 +627,24 @@ struct spatial_adapter_impl
      * @param st A reference to the spatial storage object.
      * @param predicates The predicates to be satisfied by the elements in the
      * storage.
-     *
-     * @return deref_q_iterator the iterator to the beginning of a sequence of
+     * @param begin The resulting iterator to the beginning of a sequence of
      * elements that satisfy the predicates.
+     * @param end The resulting iterator to the end of a sequence of elements
+     * that satisfy the predicates.
      */
     template<typename Predicates>
-    inline deref_q_iterator qbegin(
+    void query(
         const spatial_storage_type& st,
-        const Predicates& predicates
+        const Predicates& predicates,
+        deref_q_iterator& begin,
+        deref_q_iterator& end
     ) const
     {
-        return deref_q_iterator(tuple_get_second_query_iterator(
+        begin = deref_q_iterator(tuple_get_second_query_iterator(
             st._rtree->qbegin(predicates)),
             transform_q_deref(st._rvec.begin()));
-    }
 
-    /**
-     * @brief Get the iterator to the end of the sequence of elements that
-     * satisfy the predicates.
-     *
-     * @param st A reference to the spatial storage object.
-     *
-     * @return deref_q_iterator The iterator to the end of a sequence of
-     * elements that satisfy the predicates.
-     */
-    inline deref_q_iterator qend(
-        const spatial_storage_type& st
-    ) const
-    {
-        return deref_q_iterator(tuple_get_second_query_iterator(
+        end = deref_q_iterator(tuple_get_second_query_iterator(
             st._rtree->qend()), transform_q_deref(st._rvec.begin()));
     }
 

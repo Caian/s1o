@@ -20,6 +20,8 @@
 
 #include "test_rtree_disk.hpp"
 
+#include <boost/tuple/tuple.hpp>
+
 #include <gtest/gtest.h>
 
 #include <algorithm>
@@ -72,8 +74,8 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaAllTight)
 
         test::my_meta_qiter it, begin, end;
 
-        ASSERT_NO_THROW(end = dataset.end_query_metadata());
-        ASSERT_NO_THROW(begin = dataset.begin_query_metadata(point1, point2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_metadata(point1, point2));
 
         std::set<int> found_uids;
 
@@ -140,8 +142,8 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaOneTight)
 
         test::my_meta_qiter it, begin, end;
 
-        ASSERT_NO_THROW(end = dataset.end_query_metadata());
-        ASSERT_NO_THROW(begin = dataset.begin_query_metadata(point1, point2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_metadata(point1, point2));
 
         std::set<int> found_uids;
 
@@ -205,8 +207,8 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaComplex)
 
         test::my_meta_qiter it, begin, end;
 
-        ASSERT_NO_THROW(end = dataset.end_query_metadata());
-        ASSERT_NO_THROW(begin = dataset.begin_query_metadata(point1, point2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_metadata(point1, point2));
 
         std::set<int> found_uids;
 
@@ -296,8 +298,8 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaComplexEmpty)
 
         test::my_meta_qiter it, begin, end;
 
-        ASSERT_NO_THROW(end = dataset.end_query_metadata());
-        ASSERT_NO_THROW(begin = dataset.begin_query_metadata(point1, point2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_metadata(point1, point2));
 
         std::set<int> found_uids;
 
@@ -330,8 +332,8 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaComplexEmpty)
 
         test::my_meta_qiter it, begin, end;
 
-        ASSERT_NO_THROW(end = dataset.end_query_metadata());
-        ASSERT_NO_THROW(begin = dataset.begin_query_metadata(point1, point2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_metadata(point1, point2));
 
         ASSERT_TRUE(std::distance(begin, end) == 0);
     }
@@ -390,8 +392,8 @@ DATASET_TEST(MultipleSlot, QueryRangeElemAllTight)
 
         test::my_elem_qiter it, begin, end;
 
-        ASSERT_NO_THROW(end = dataset.end_query_elements());
-        ASSERT_NO_THROW(begin = dataset.begin_query_elements(point1, point2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_elements(point1, point2));
 
         std::set<int> found_uids;
 
@@ -458,8 +460,8 @@ DATASET_TEST(MultipleSlot, QueryRangeElemOneTight)
 
         test::my_elem_qiter it, begin, end;
 
-        ASSERT_NO_THROW(end = dataset.end_query_elements());
-        ASSERT_NO_THROW(begin = dataset.begin_query_elements(point1, point2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_elements(point1, point2));
 
         std::set<int> found_uids;
 
@@ -523,8 +525,8 @@ DATASET_TEST(MultipleSlot, QueryRangeElemComplex)
 
         test::my_elem_qiter it, begin, end;
 
-        ASSERT_NO_THROW(end = dataset.end_query_elements());
-        ASSERT_NO_THROW(begin = dataset.begin_query_elements(point1, point2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_elements(point1, point2));
 
         std::set<int> found_uids;
 
@@ -612,8 +614,8 @@ DATASET_TEST(MultipleSlot, QueryRangeElemComplexEmpty)
 
         test::my_meta_qiter it, begin, end;
 
-        ASSERT_NO_THROW(end = dataset.end_query_metadata());
-        ASSERT_NO_THROW(begin = dataset.begin_query_metadata(point1, point2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_metadata(point1, point2));
 
         ASSERT_TRUE(std::distance(begin, end) == 0);
     }
@@ -672,14 +674,11 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotAllTight)
 
         test::my_elem_qiter_s it, begin, end;
 
-        ASSERT_THROW(end = dataset.end_query_elements(slots),
-            s1o::invalid_slot_exception);
+        ASSERT_THROW(boost::tie(begin, end) = dataset.query_elements(point1,
+            point2, slots), s1o::invalid_slot_exception);
 
-        ASSERT_THROW(begin = dataset.begin_query_elements(point1, point2, slots),
-            s1o::invalid_slot_exception);
-
-        ASSERT_NO_THROW(end = dataset.end_query_elements(2));
-        ASSERT_NO_THROW(begin = dataset.begin_query_elements(point1, point2, 2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_elements(point1, point2, 2));
 
         std::set<int> found_uids;
 
@@ -746,14 +745,11 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotOneTight)
 
         test::my_elem_qiter_s it, begin, end;
 
-        ASSERT_THROW(end = dataset.end_query_elements(slots),
-            s1o::invalid_slot_exception);
+        ASSERT_THROW(boost::tie(begin, end) = dataset.query_elements(point1,
+            point2, slots), s1o::invalid_slot_exception);
 
-        ASSERT_THROW(begin = dataset.begin_query_elements(point1, point2, slots),
-            s1o::invalid_slot_exception);
-
-        ASSERT_NO_THROW(end = dataset.end_query_elements(2));
-        ASSERT_NO_THROW(begin = dataset.begin_query_elements(point1, point2, 2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_elements(point1, point2, 2));
 
         std::set<int> found_uids;
 
@@ -817,14 +813,11 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotComplex)
 
         test::my_elem_qiter_s it, begin, end;
 
-        ASSERT_THROW(end = dataset.end_query_elements(slots),
-            s1o::invalid_slot_exception);
+        ASSERT_THROW(boost::tie(begin, end) = dataset.query_elements(point1,
+            point2, slots), s1o::invalid_slot_exception);
 
-        ASSERT_THROW(begin = dataset.begin_query_elements(point1, point2, slots),
-            s1o::invalid_slot_exception);
-
-        ASSERT_NO_THROW(end = dataset.end_query_elements(2));
-        ASSERT_NO_THROW(begin = dataset.begin_query_elements(point1, point2, 2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_elements(point1, point2, 2));
 
         std::set<int> found_uids;
 
@@ -912,14 +905,11 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotComplexEmpty)
 
         test::my_elem_qiter_s it, begin, end;
 
-        ASSERT_THROW(end = dataset.end_query_elements(slots),
-            s1o::invalid_slot_exception);
+        ASSERT_THROW(boost::tie(begin, end) = dataset.query_elements(point1,
+            point2, slots), s1o::invalid_slot_exception);
 
-        ASSERT_THROW(begin = dataset.begin_query_elements(point1, point2, slots),
-            s1o::invalid_slot_exception);
-
-        ASSERT_NO_THROW(end = dataset.end_query_elements(2));
-        ASSERT_NO_THROW(begin = dataset.begin_query_elements(point1, point2, 2));
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.query_elements(point1, point2, 2));
 
         ASSERT_TRUE(std::distance(begin, end) == 0);
     }
