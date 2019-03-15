@@ -21,6 +21,8 @@
 #pragma once
 
 #include <s1o/exceptions.hpp>
+#include <s1o/queries/nearest.hpp>
+#include <s1o/queries/closed_interval.hpp>
 #include <s1o/transforms/transform_drop_const.hpp>
 #include <s1o/transforms/transform_get_tuple_element.hpp>
 #include <s1o/helpers/rtree_indexer_byval.hpp>
@@ -315,6 +317,77 @@ struct spatial_adapter_impl
     ) const
     {
         begin = tuple_get_second_q_iterator(st.qbegin(predicates));
+        end = tuple_get_second_q_iterator(st.qend());
+    }
+
+    /**
+     * @brief Get the iterators to the beginning and end of a sequence of
+     * elements that satisfy a closed interval query.
+     *
+     * @tparam Point The spatial point type used in the predicates to be
+     * satisfied by the elements in the storage.
+     *
+     * @param st A reference to the spatial storage object.
+     * @param predicates The closed interval query to be satisfied by the
+     * elements in the storage.
+     * @param begin The resulting iterator to the beginning of a sequence of
+     * elements that satisfy the predicates.
+     * @param end The resulting iterator to the end of a sequence of elements
+     * that satisfy the predicates.
+     */
+    template<typename Point>
+    void query(
+        const rtree_store& st,
+        const queries::closed_interval<Point>& predicates,
+        tuple_get_second_q_iterator& begin,
+        tuple_get_second_q_iterator& end
+    ) const
+    {
+        using namespace boost::geometry::index;
+        using namespace boost::geometry::model;
+
+        const spatial_point_type point_min = predicates.point_min;
+        const spatial_point_type point_max = predicates.point_max;
+
+        begin = tuple_get_second_q_iterator(st.qbegin(
+            intersects(box<spatial_point_type>(point_min, point_max))
+        ));
+
+        end = tuple_get_second_q_iterator(st.qend());
+    }
+
+    /**
+     * @brief Get the iterators to the beginning and end of a sequence of
+     * elements that satisfy a k-nearest query.
+     *
+     * @tparam Point The spatial point type used in the predicates to be
+     * satisfied by the elements in the storage.
+     *
+     * @param st A reference to the spatial storage object.
+     * @param predicates The k-nearest query to be satisfied by the elements
+     * in the storage.
+     * @param begin The resulting iterator to the beginning of a sequence of
+     * elements that satisfy the predicates.
+     * @param end The resulting iterator to the end of a sequence of elements
+     * that satisfy the predicates.
+     */
+    template<typename Point>
+    void query(
+        const rtree_store& st,
+        const queries::nearest<Point>& predicates,
+        tuple_get_second_q_iterator& begin,
+        tuple_get_second_q_iterator& end
+    ) const
+    {
+        using namespace boost::geometry::index;
+
+        const spatial_point_type point = predicates.point;
+        const unsigned int k = predicates.k;
+
+        begin = tuple_get_second_q_iterator(st.qbegin(
+            nearest(point, k)
+        ));
+
         end = tuple_get_second_q_iterator(st.qend());
     }
 
