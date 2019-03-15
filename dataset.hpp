@@ -24,6 +24,8 @@
 #include "checked.hpp"
 #include "metadata.hpp"
 #include "exceptions.hpp"
+#include "queries/nearest.hpp"
+#include "queries/closed_interval.hpp"
 #include "traits/metadata_type.hpp"
 #include "traits/num_spatial_dims.hpp"
 #include "traits/supports_element_pair.hpp"
@@ -44,7 +46,6 @@
 
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/iterator/counting_iterator.hpp>
-#include <boost/geometry.hpp>
 
 #include <algorithm>
 #include <iterator>
@@ -3631,9 +3632,9 @@ public:
         elem_q_iterator& end
     ) const
     {
-        _query_elements(boost::geometry::index::intersects(
-            boost::geometry::model::box<spatial_point_type>(
-            minpoint, maxpoint)), begin, end);
+        _query_elements(queries::closed_interval<
+            spatial_point_type
+            >(minpoint, maxpoint), begin, end);
     }
 
     /**
@@ -3699,9 +3700,9 @@ public:
         elem_q_iterator_slot& end
     ) const
     {
-        _query_elements(boost::geometry::index::intersects(
-            boost::geometry::model::box<spatial_point_type>(
-            minpoint, maxpoint)), slot, begin, end);
+        _query_elements(queries::closed_interval<
+            spatial_point_type
+            >(minpoint, maxpoint), slot, begin, end);
     }
 
     /**
@@ -3768,9 +3769,9 @@ public:
         meta_q_iterator& end
     ) const
     {
-        _begin_query_metadata(boost::geometry::index::intersects(
-            boost::geometry::model::box<spatial_point_type>(
-            minpoint, maxpoint)), begin, end);
+        _begin_query_metadata(queries::closed_interval<
+            spatial_point_type
+            >(minpoint, maxpoint), begin, end);
     }
 
     /**
@@ -3830,8 +3831,9 @@ public:
         elem_q_iterator& end
     ) const
     {
-        _query_elements(boost::geometry::index::nearest(point,
-            nearest), begin, end);
+        _query_elements(queries::nearest<
+            spatial_point_type
+            >(point, nearest), begin, end);
     }
 
     /**
@@ -3890,8 +3892,9 @@ public:
         elem_q_iterator_slot& end
     ) const
     {
-        _query_elements(boost::geometry::index::nearest(point,
-            nearest), slot, begin, end);
+        _query_elements(queries::nearest<
+            spatial_point_type
+            >(point, nearest), slot, begin, end);
     }
 
     /**
@@ -3945,8 +3948,9 @@ public:
         meta_q_iterator& end
     ) const
     {
-        _begin_query_metadata(boost::geometry::index::nearest(point,
-            nearest), begin, end);
+        _begin_query_metadata(queries::nearest<
+            spatial_point_type
+            >(point, nearest), begin, end);
     }
 
     /**
