@@ -1005,6 +1005,7 @@ public:
  *
  * @note TSpatialAdapterImpl object must expose the following methods:
  *
+ *  - bounds
  *  - empty
  *  - equals
  *  - get_extra_files
@@ -1081,6 +1082,12 @@ public:
     typedef typename s1o::traits::spatial_point_type<
         TSpatialAdapterImpl
         >::type spatial_point_type;
+
+    /** A pair of spatial points. */
+    typedef typename std::pair<
+        spatial_point_type,
+        spatial_point_type
+        > spatial_point_pair;
 
 private:
 
@@ -3603,6 +3610,34 @@ public:
             typename iter_builder::meta_l_iterator,
             typename iter_builder::transform_l_get_meta
             >(_spatial_adapter.send(_spatial_storage), this);
+    }
+
+    /**
+     * @brief Get the boundaries of the data stored in the spatial storage.
+     *
+     * @param minpoint The smallest coordinates in the spatial storage.
+     * @param maxpoint The largest coordinates in the spatial storage.
+     */
+    void bounds(
+        spatial_point_type& minpoint,
+        spatial_point_type& maxpoint
+    ) const
+    {
+        _spatial_adapter.bounds(_spatial_storage, minpoint, maxpoint);
+    }
+
+    /**
+     * @brief Get the boundaries of the data stored in the spatial storage.
+     *
+     * @return spatial_point_pair A pair of spatial points where the first
+     * containts the smallest coordinates in the spatial storage and the
+     * second contains the largest coordinates in the spatial storage.
+     */
+    spatial_point_pair bounds() const
+    {
+        spatial_point_pair b;
+        bounds(b.first, b.second);
+        return b;
     }
 
     /**
