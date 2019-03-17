@@ -620,6 +620,24 @@ struct spatial_adapter_impl
     }
 
     /**
+     * @brief Get the boundaries of the data stored in the spatial storage.
+     *
+     * @param st The spatial storage object being initialized.
+     * @param minpoint The smallest coordinates in the spatial storage.
+     * @param maxpoint The largest coordinates in the spatial storage.
+     */
+    void bounds(
+        const spatial_storage_type& st,
+        spatial_point_type& minpoint,
+        spatial_point_type& maxpoint
+    ) const
+    {
+        typename rtree_store::bounds_type b = st._rtree->bounds();
+        minpoint = b.min_corner();
+        maxpoint = b.max_corner();
+    }
+
+    /**
      * @brief Get the iterators to the beginning and end of a sequence of
      * elements that satisfy the predicates.
      *
