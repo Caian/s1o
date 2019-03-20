@@ -24,7 +24,6 @@
 #include <s1o/exceptions.hpp>
 #include <s1o/queries/nearest.hpp>
 #include <s1o/queries/closed_interval.hpp>
-#include <s1o/transforms/transform_deref.hpp>
 #include <s1o/transforms/transform_get_tuple_element.hpp>
 #include <s1o/helpers/rtree_indexer_byval.hpp>
 
@@ -32,7 +31,6 @@
 #include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/index/rtree.hpp>
 #include <boost/iterator/zip_iterator.hpp>
-#include <boost/iterator/counting_iterator.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/interprocess/managed_mapped_file.hpp>
 #include <boost/tuple/tuple.hpp>
