@@ -469,6 +469,18 @@ struct spatial_adapter_impl
     {
         return drop_const_s_iterator(tuple_get_second_s_iterator(st.end()));
     }
+
+    /**
+     * @brief Destroy the spatial storage, if necessary.
+     *
+     * @param st A reference to the spatial storage object.
+     */
+    void destroy(
+        spatial_storage_type& st
+    ) const
+    {
+        (void)st;
+    }
 };
 
 };

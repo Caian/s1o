@@ -807,6 +807,18 @@ struct spatial_adapter_impl
         return deref_s_iterator(tuple_get_second_iterator(st._rtree->end()),
             transform_s_deref(st._rvec.begin()));
     }
+
+    /**
+     * @brief Destroy the spatial storage, if necessary.
+     *
+     * @param st A reference to the spatial storage object.
+     */
+    void destroy(
+        spatial_storage_type& st
+    ) const
+    {
+        (void)st;
+    }
 };
 
 };
