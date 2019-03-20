@@ -621,8 +621,8 @@ public:
     }
 
     /**
-     * @brief Destroy the class, unmapping any mapped pointers
-     * and closing any file descriptors.
+     * @brief Destroy the class, unmapping any mapped pointers and closing any
+     * file descriptors.
      *
      */
     virtual ~_dataset_fd_base()
@@ -1006,6 +1006,7 @@ public:
  * @note TSpatialAdapterImpl object must expose the following methods:
  *
  *  - bounds
+ *  - destroy
  *  - empty
  *  - equals
  *  - get_extra_files
@@ -2813,6 +2814,16 @@ public:
         init_spstruct_mem(true); // We are creating a new dataset
         if (!_fds.no_data())
             set_data_offsets_from_storage();
+    }
+
+    /**
+     * @brief Destroy the class and, if necessary, destroy the spatial storage
+     * if needed.
+     *
+     */
+    virtual ~dataset()
+    {
+        _spatial_adapter.destroy(_spatial_storage);
     }
 
     /**
