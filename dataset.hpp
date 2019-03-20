@@ -39,6 +39,7 @@
 #include "transforms/transform_ds_get_element.hpp"
 #include "transforms/transform_ds_get_location.hpp"
 #include "transforms/transform_ds_read_meta.hpp"
+#include "initialization_info/default_info.hpp"
 #include "helpers/iter_builder.hpp"
 #include "helpers/copy_location.hpp"
 
@@ -2064,9 +2065,11 @@ private:
         node_location_iterator loc_begin(uid_begin, loc_transform);
         node_location_iterator loc_end(uid_end, loc_transform);
 
-        _spatial_adapter.initialize(_spatial_storage, get_basename(),
-            new_ds, _fds.can_write(), elem_begin, elem_end, loc_begin,
-            loc_end);
+        initialization_info::default_info init_info(get_basename(),
+            new_ds, _fds.can_write());
+
+        _spatial_adapter.initialize(_spatial_storage, init_info,
+            elem_begin, elem_end, loc_begin, loc_end);
 
         // Check if the data is sorted
 
