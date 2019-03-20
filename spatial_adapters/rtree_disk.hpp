@@ -26,6 +26,7 @@
 #include <s1o/queries/closed_interval.hpp>
 #include <s1o/transforms/transform_deref.hpp>
 #include <s1o/transforms/transform_get_tuple_element.hpp>
+#include <s1o/initialization_info/default_info.hpp>
 #include <s1o/helpers/rtree_indexer_byval.hpp>
 
 #include <boost/geometry.hpp>
@@ -384,11 +385,7 @@ struct spatial_adapter_impl
      * locations associated with each element.
      *
      * @param st The spatial storage object being initialized.
-     * @param basename The path and filename of the dataset without the
-     * trailing extensions.
-     * @param is_new Indicates if the dataset is being created from a
-     * collection of elements of is being opened.
-     * @param can_write Indicates if the datataset allows writes.
+     * @param info The initialization information for the spatial storage.
      * @param nodebegin The iterator pointing to the beginning of a sequence
      * of TData objects to be stored.
      * @param nodeend The iterator pointing to after the last element of
@@ -401,18 +398,13 @@ struct spatial_adapter_impl
     template <typename ITN, typename ITL>
     inline void initialize(
         spatial_storage_type& st,
-        const std::string& basename,
-        bool is_new,
-        bool can_write,
+        const s1o::initialization_info::default_info& info,
         ITN nodebegin,
         ITN nodeend,
         ITL locbegin,
         ITL locend
     ) const
     {
-        (void)(is_new);
-        (void)(can_write);
-
         const size_t node_count = std::distance(nodebegin, nodeend);
         const size_t loc_count = std::distance(locbegin, locend);
 
@@ -423,11 +415,11 @@ struct spatial_adapter_impl
                 << actual_num_elements(loc_count));
         }
 
-        std::string rfile = get_rindex_name(basename);
+        std::string rfile = get_rindex_name(info.basename);
 
-        if (is_new) {
+        if (info.is_new) {
 
-            if (!can_write) {
+            if (!info.can_write) {
                 EX3_THROW(read_only_exception()
                     << file_name(rfile));
             }
