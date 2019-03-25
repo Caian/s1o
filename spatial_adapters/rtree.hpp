@@ -25,7 +25,7 @@
 #include <s1o/queries/closed_interval.hpp>
 #include <s1o/transforms/transform_drop_const.hpp>
 #include <s1o/transforms/transform_get_tuple_element.hpp>
-#include <s1o/initialization_info/default_info.hpp>
+#include <s1o/initialization_data/default_data.hpp>
 #include <s1o/helpers/rtree_indexer_byval.hpp>
 
 #include <boost/geometry.hpp>

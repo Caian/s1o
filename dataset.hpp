@@ -39,7 +39,7 @@
 #include "transforms/transform_ds_get_element.hpp"
 #include "transforms/transform_ds_get_location.hpp"
 #include "transforms/transform_ds_read_meta.hpp"
-#include "initialization_info/default_info.hpp"
+#include "initialization_data/default_data.hpp"
 #include "helpers/iter_builder.hpp"
 #include "helpers/copy_location.hpp"
 
