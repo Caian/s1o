@@ -328,7 +328,7 @@ struct spatial_adapter_impl
      * locations associated with each element.
      *
      * @param st The spatial storage object being initialized.
-     * @param info The initialization information for the spatial storage.
+     * @param data The initialization data for the spatial storage.
      * @param nodebegin The iterator pointing to the beginning of a sequence
      * of uids to be stored.
      * @param nodeend The iterator pointing to after the last element of
@@ -343,7 +343,7 @@ struct spatial_adapter_impl
     template <typename ITN, typename ITL>
     inline void initialize(
         spatial_storage_type& st,
-        const s1o::initialization_info::default_info& info,
+        const initialization_data::default_data& data,
         ITN nodebegin,
         ITN nodeend,
         ITL locbegin,
@@ -360,11 +360,11 @@ struct spatial_adapter_impl
                 << actual_num_elements(loc_count));
         }
 
-        std::string rfile = get_rindex_name(info.basename);
+        std::string rfile = get_rindex_name(data.basename);
 
-        if (info.is_new) {
+        if (data.is_new) {
 
-            if (!info.can_write) {
+            if (!data.can_write) {
                 EX3_THROW(read_only_exception()
                     << file_name(rfile));
             }

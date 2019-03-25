@@ -246,7 +246,7 @@ struct spatial_adapter_impl
      * locations associated with each element.
      *
      * @param st The spatial storage object being initialized.
-     * @param info The initialization information for the spatial storage.
+     * @param data The initialization data for the spatial storage.
      * @param nodeend The iterator pointing to after the last element of
      * sequence of TData objects to be stored.
      * @param locbegin The iterator pointing to the beginning of a sequence
@@ -257,14 +257,14 @@ struct spatial_adapter_impl
     template <typename ITN, typename ITL>
     inline void initialize(
         spatial_storage_type& st,
-        const s1o::initialization_info::default_info& info,
+        const s1o::initialization_data::default_data& data,
         ITN nodebegin,
         ITN nodeend,
         ITL locbegin,
         ITL locend
     ) const
     {
-        (void)(info);
+        (void)(data);
 
         const size_t node_count = std::distance(nodebegin, nodeend);
         const size_t loc_count = std::distance(locbegin, locend);

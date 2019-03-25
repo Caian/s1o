@@ -23,14 +23,13 @@
 #include <string>
 
 namespace s1o {
-namespace initialization_info {
+namespace initialization_data {
 
 /**
- * @brief Default information passed to the spatial adapter for
- * initialization.
+ * @brief Default data passed to the spatial adapter for initialization.
  *
  */
-struct default_info
+struct default_data
 {
     /** The path and filename of the dataset without the trailing
         extensions. */
@@ -43,7 +42,7 @@ struct default_info
     /** Indicates if the datataset allows writes. */
     bool can_write;
 
-    default_info(
+    default_data(
         const std::string& basename,
         bool is_new,
         bool can_write

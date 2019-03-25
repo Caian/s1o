@@ -2066,10 +2066,10 @@ private:
         node_location_iterator loc_begin(uid_begin, loc_transform);
         node_location_iterator loc_end(uid_end, loc_transform);
 
-        initialization_info::default_info init_info(get_basename(),
+        initialization_data::default_data init_data(get_basename(),
             new_ds, _fds.can_write());
 
-        _spatial_adapter.initialize(_spatial_storage, init_info,
+        _spatial_adapter.initialize(_spatial_storage, init_data,
             elem_begin, elem_end, loc_begin, loc_end);
 
         // Check if the data is sorted
