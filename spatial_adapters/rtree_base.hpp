@@ -27,6 +27,7 @@
 #include <s1o/transforms/transform_drop_const.hpp>
 #include <s1o/transforms/transform_get_tuple_element.hpp>
 #include <s1o/initialization_data/default_data.hpp>
+#include <s1o/initialization_data/mapped_data.hpp>
 #include <s1o/helpers/rtree_indexer_byval.hpp>
 
 #include <boost/geometry.hpp>
@@ -305,6 +306,106 @@ struct spatial_adapter_impl
             boost::make_zip_iterator(
                 boost::make_tuple(locend, nodeend)),
             _params);
+    }
+
+    /**
+     * @brief Initialize the spatial storage with a sequence of elements.
+     *
+     * @tparam ITN The type of the iterator for the sequence of TData elements
+     * to be stored.
+     * @tparam ITL The type of the iterator for the sequence of spatial
+     * locations associated with each element.
+     *
+     * @param st The spatial storage object being initialized.
+     * @param data The initialization data for the spatial storage.
+     * @param nodeend The iterator pointing to after the last element of
+     * sequence of TData objects to be stored.
+     * @param locbegin The iterator pointing to the beginning of a sequence
+     * of spatial locations associated with each element.
+     * @param locend The iterator pointing to after the last element of a
+     * sequence of spatial locations associated with each element.
+     */
+    template <typename ITN, typename ITL>
+    void initialize(
+        spatial_storage_type& st,
+        const initialization_data::mapped_data& data,
+        ITN nodebegin,
+        ITN nodeend,
+        ITL locbegin,
+        ITL locend
+    ) const
+    {
+        // Reset the storage
+        if (data.mapped_file == 0) {
+            st = 0;
+            return;
+        }
+
+        const size_t node_count = std::distance(nodebegin, nodeend);
+        const size_t loc_count = std::distance(locbegin, locend);
+
+        // Must not happen
+        if (node_count != loc_count) {
+            EX3_THROW(location_count_mismatch_exception()
+                << expected_num_elements(node_count)
+                << actual_num_elements(loc_count));
+        }
+
+        std::string memory_id = data.prefix +
+            "s1o::spatial_adapters::rtree_base";
+
+        if (data.base_data.is_new) {
+
+            // Rebind the allocator to allocate the tree itself
+            allocator_t allocator(data.mapped_file->get_segment_manager());
+
+            // Create the rtree
+            st = data.mapped_file->template construct<
+                rtree_store
+                >(memory_id.c_str())(
+                boost::make_zip_iterator(
+                    boost::make_tuple(locbegin, nodebegin)),
+                boost::make_zip_iterator(
+                    boost::make_tuple(locend, nodeend)),
+                _params, indexable_t(), equal_to_t(), allocator);
+
+            // Shouldn't happen because the file is new
+            if (st == 0) {
+                EX3_THROW(inconsistent_index_exception()
+                    << actual_pointer(st));
+            }
+        }
+        else {
+
+            std::pair<rtree_store*, size_t> p;
+
+            p = data.mapped_file->template find<
+                rtree_store
+                >(memory_id.c_str());
+
+            // Shouldn't happen because we are opening a valid file
+            if (p.first == 0) {
+                EX3_THROW(inconsistent_index_exception()
+                    << actual_pointer(p.first)
+                    << actual_num_elements(p.second));
+            }
+
+            // Shouldn't happen because we only allocate one tree
+            if (p.second != 1) {
+                EX3_THROW(inconsistent_index_exception()
+                    << actual_pointer(p.first)
+                    << actual_num_elements(p.second));
+            }
+
+            st = p.first;
+        }
+
+        // Check if traces were added or removed after the tree was created
+        if (st->size() != node_count) {
+            EX3_THROW(inconsistent_index_exception()
+                << expected_num_elements(st->size())
+                << actual_num_elements(node_count));
+        }
     }
 
     /**
