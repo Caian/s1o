@@ -262,6 +262,8 @@ struct spatial_adapter_impl
      *
      * @param st The spatial storage object being initialized.
      * @param data The initialization data for the spatial storage.
+     * @param nodebegin The iterator pointing to the beginning of a sequence
+     * of TData objects to be stored.
      * @param nodeend The iterator pointing to after the last element of
      * sequence of TData objects to be stored.
      * @param locbegin The iterator pointing to the beginning of a sequence

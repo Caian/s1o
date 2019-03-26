@@ -90,7 +90,7 @@ struct spatial_adapter_impl
     /** The inner type used to store data in an rtree node. */
     typedef TData rpair_data;
 
-    /** A point for the RTree implementation. */
+    /** A point for the rtree implementation. */
     typedef boost::geometry::model::point<
         spatial_value_type,
         num_spatial_dims,
@@ -120,7 +120,7 @@ struct spatial_adapter_impl
         boost::interprocess::managed_mapped_file::segment_manager
         > allocator_t;
 
-    /** The type of the RTree, tailored for the number of dimensions. */
+    /** The type of the rtree, tailored for the number of dimensions. */
     typedef boost::geometry::index::rtree<
         rpair,
         Params,
@@ -497,7 +497,7 @@ struct spatial_adapter_impl
             st._alloc->get_segment_manager()->get_size() -
             st._alloc->get_segment_manager()->get_free_memory();
 
-        // Retrieve the r-tree from the storage
+        // Retrieve the rtree from the storage
 
         std::pair<rtree_store*, size_t> p = st._mfile->template find<
             rtree_store
@@ -567,7 +567,7 @@ struct spatial_adapter_impl
 
             try {
 
-                // Create the r-tree
+                // Create the rtree
                 st._rtree = st._mfile->template construct<
                     rtree_store
                     >("rtree")(begin, end, _params, indexable_t(),
