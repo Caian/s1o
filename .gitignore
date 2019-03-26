@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# GCC Coverage data
+*.gcno
+*.gcda
