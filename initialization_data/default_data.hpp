@@ -42,6 +42,15 @@ struct default_data
     /** Indicates if the datataset allows writes. */
     bool can_write;
 
+    /**
+     * @brief Construct a new default_data object
+     *
+     * @param basename The path and filename of the dataset without the
+     * trailing extensions.
+     * @param is_new Indicates if the dataset is being created from a
+     * collection of elements of is being opened.
+     * @param can_write Indicates if the datataset allows writes.
+     */
     default_data(
         const std::string& basename,
         bool is_new,
