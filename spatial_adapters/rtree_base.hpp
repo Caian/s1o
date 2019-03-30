@@ -58,6 +58,8 @@ template <
     >
 struct rtree_base
 {
+    /** The parameters used to control the tree. */
+    typedef Params params_t;
 
 /**
  * @brief The implemnetation of the rtree spatial adapter.
