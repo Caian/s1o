@@ -131,9 +131,17 @@ struct spatial_adapter_impl
         the rtree. */
     struct initialization_info
     {
+        /** The number of allocated bytes for the rtree inside the mapped
+            file. */
         size_t rtree_size_bytes;
+
+        /** Information about the underlying memory mapped file. */
         helpers::mapped_file_helper::initialization_info mapped_file;
 
+        /**
+         * @brief Construct a new initialization_info object.
+         *
+         */
         initialization_info(
         ) :
             rtree_size_bytes(0),
@@ -145,10 +153,20 @@ struct spatial_adapter_impl
     /** The spatial storage type required by the trait. */
     struct spatial_storage_type
     {
+        /** The rtree object stored in the mapped file. */
         rtree_store _rtree;
+
+        /** The memory mapped data required to be stored. */
         helpers::mapped_file_helper::mapped_storage _mstorage;
+
+        /** The information about the initialization process of the mapped file
+            and rtree. */
         initialization_info _info;
 
+        /**
+         * @brief Construct a new spatial_storage_type object
+         *
+         */
         spatial_storage_type() :
             _rtree(0),
             _mstorage(),
@@ -156,6 +174,10 @@ struct spatial_adapter_impl
         {
         }
 
+        /**
+         * @brief Destroy the spatial_storage_type object
+         *
+         */
         ~spatial_storage_type()
         {
         }
