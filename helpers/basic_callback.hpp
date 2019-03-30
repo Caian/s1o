@@ -37,12 +37,26 @@ namespace helpers {
 template <typename AdapterImpl, typename Storage, typename ITN, typename ITL>
 struct basic_callback
 {
+    /** The spatial adapter of the dataset. */
     const AdapterImpl& _adapter;
+
+    /** The spatial storage being initialized. */
     Storage& _storage;
 
+    /** The iterator pointing to the beginning of a sequence of data elements
+        to be stored. */
     const ITN _nodebegin;
+
+    /** The iterator pointing to after the last element of sequence of data
+        elements to be stored. */
     const ITN _nodeend;
+
+    /** The iterator pointing to the beginning of a sequence of spatial
+        locations associated with each data element. */
     const ITL _locbegin;
+
+    /** The iterator pointing to after the last element of a sequence of
+        spatial locations associated with each data element. */
     const ITL _locend;
 
     /**
