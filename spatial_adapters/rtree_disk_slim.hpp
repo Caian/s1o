@@ -26,6 +26,8 @@
 #include <s1o/exceptions.hpp>
 #include <s1o/helpers/basic_callback.hpp>
 #include <s1o/helpers/mapped_file_helper.hpp>
+#include <s1o/traits/num_spatial_dims.hpp>
+#include <s1o/traits/spatial_value_type.hpp>
 #include <s1o/traits/spatial_point_type.hpp>
 #include <s1o/traits/spatial_adapter_impl.hpp>
 #include <s1o/traits/spatial_storage_type.hpp>
@@ -59,6 +61,20 @@ struct rtree_disk_slim
     /** The parameters used to control the tree. */
     typedef Params params_t;
 
+    /** Create a memory-mapped allocator so the operations in the tree happen
+        directly on disk. */
+    typedef boost::interprocess::allocator<
+        void,
+        boost::interprocess::managed_mapped_file::segment_manager
+        > allocator_t;
+
+    /** The base rtree adapter that handles the rtree. */
+    typedef rtree_base<
+        params_t,
+        CoordSys,
+        allocator_t
+        > rtree_adapter;
+
     /** The parameters used to control the creation of the mapped file. */
     typedef helpers::mapped_file_helper::params_t mparams_t;
 
@@ -83,33 +99,22 @@ struct spatial_adapter_impl
     /** The specialization of the current type. */
     typedef spatial_adapter_impl<TData, TSVal, NSDims> this_type;
 
-    /** The number of spatial dimensions used to locate the date. */
-    static const unsigned int num_spatial_dims = NSDims;
-
-    /** The type used to represent the spatial variables. */
-    typedef TSVal spatial_value_type;
-
-    /** Create a memory-mapped allocator so the operations in the tree happen
-        directly on disk. */
-    typedef boost::interprocess::allocator<
-        void,
-        boost::interprocess::managed_mapped_file::segment_manager
-        > allocator_t;
-
-    /** The base rtree adapter that handles the rtree. */
-    typedef rtree_base<
-        params_t,
-        CoordSys,
-        allocator_t
-        > rtree_adapter;
-
     /** The implementation of the base adapter that handles the rtree. */
     typedef typename traits::spatial_adapter_impl<
         rtree_adapter,
         uid_t,
-        spatial_value_type,
-        num_spatial_dims
+        TSVal,
+        NSDims
         >::type rtree_adapter_impl;
+
+    /** The number of spatial dimensions used to locate the date. */
+    static const unsigned int num_spatial_dims =
+        s1o::traits::num_spatial_dims<rtree_adapter_impl>::value;
+
+    /** The type used to represent the spatial variables. */
+    typedef typename s1o::traits::spatial_value_type<
+        rtree_adapter_impl
+        >::type spatial_value_type;
 
     /** The spatial storage of the base rtree. */
     typedef typename s1o::traits::spatial_storage_type<
