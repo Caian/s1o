@@ -31,6 +31,11 @@
 namespace s1o {
 namespace helpers {
 
+/**
+ * @brief Helper class to handle memory mapped files and to allow construction
+ * and initialization of objects inside it.
+ *
+ */
 class mapped_file_helper
 {
 public:
@@ -108,9 +113,18 @@ public:
         the mapped file and data structures. */
     struct initialization_info
     {
+        /** The size in bytes of the memory mapped file. */
         size_t raw_size_bytes;
+
+        /** The number of free bytes in the mapped memory region after the
+            files is open or created. */
         size_t initial_free_bytes;
+
+        /** The size in bytes of the mapped memory region. */
         size_t size_bytes;
+
+        /** The number of times the mapped file had to be created during
+            initialization. */
         size_t attempts;
 
         /**
