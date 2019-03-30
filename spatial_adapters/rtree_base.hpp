@@ -117,7 +117,7 @@ struct spatial_adapter_impl
     /** The type of the rtree, tailored for the number of dimensions. */
     typedef boost::geometry::index::rtree<
         rpair,
-        Params,
+        params_t,
         indexable_t,
         equal_to_t,
         allocator_t
@@ -186,7 +186,7 @@ struct spatial_adapter_impl
         spatial_storage_query_iterator_type;
 
     /** The parameters used to control the tree. */
-    const Params _params;
+    const params_t _params;
 
     /**
      * @brief Construct a new spatial_adapter_impl object.
@@ -194,7 +194,7 @@ struct spatial_adapter_impl
      * @param params The parameters used to control the tree.
      */
     spatial_adapter_impl(
-        const Params& params=Params()
+        const params_t& params=params_t()
     ) :
         _params(params)
     {
