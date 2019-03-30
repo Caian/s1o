@@ -58,15 +58,15 @@ DATASET_TEST(MultipleSlot, RIndexCustomSize)
 
     test::my_adapter meta_adapter;
     test::params_t params;
-    test::my_dataset::TSpatialAdapterImpl spatial_adapter(
-        params, 256ULL*1024*1024, 128ULL*1024*1024, 5);
+    test::mparams_t mparams(256ULL*1024*1024, 128ULL*1024*1024, 5);
+    test::my_dataset::TSpatialAdapterImpl spatial_adapter(params, mparams);
 
     try {
         test::my_dataset dataset(dataset_name, 0, slots, stuff.begin(),
             stuff.end(), meta_adapter, spatial_adapter);
 
         ASSERT_TRUE(256ULL*1024*1024 == dataset.get_spatial_storage().
-            _info.rfile_size_bytes);
+            _info.mapped_file.raw_size_bytes);
     }
     catch (const std::exception& e) {
         std::cerr
@@ -108,14 +108,16 @@ DATASET_TEST(MultipleSlot, RIndexRetry)
 
     test::my_adapter meta_adapter;
     test::params_t params;
+    test::mparams_t mparams(10ULL*1024*1024, 5ULL*1024*1024, 5);
     test::my_dataset::TSpatialAdapterImpl spatial_adapter(
-        params, 10ULL*1024*1024, 5ULL*1024*1024, 5);
+        params, mparams);
 
     try {
         test::my_dataset dataset(dataset_name, 0, slots, stuff.begin(),
             stuff.end(), meta_adapter, spatial_adapter);
 
-        ASSERT_TRUE(1 < dataset.get_spatial_storage()._info.rfile_attempts);
+        ASSERT_TRUE(1 < dataset.get_spatial_storage().
+            _info.mapped_file.attempts);
     }
     catch (const std::exception& e) {
         std::cerr
@@ -157,8 +159,9 @@ DATASET_TEST(MultipleSlot, RIndexRetryFail)
 
     test::my_adapter meta_adapter;
     test::params_t params;
+    test::mparams_t mparams(1ULL*1024*1024, 1ULL*1024*1024, 5);
     test::my_dataset::TSpatialAdapterImpl spatial_adapter(
-        params, 1ULL*1024*1024, 1ULL*1024*1024, 5);
+        params, mparams);
 
     ASSERT_THROW(test::my_dataset dataset(dataset_name, 0, slots,
         stuff.begin(), stuff.end(), meta_adapter, spatial_adapter),

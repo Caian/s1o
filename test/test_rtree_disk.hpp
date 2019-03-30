@@ -129,6 +129,7 @@ namespace test
         params_t,
         coord_sys_t
         > rtree;
+    typedef rtree::mparams_t mparams_t;
     typedef s1o::dataset<my_adapter, rtree> my_dataset;
     typedef my_dataset::meta_l_iterator my_meta_iter;
     typedef my_dataset::elem_l_iterator my_elem_iter;
