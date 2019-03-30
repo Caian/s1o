@@ -38,6 +38,7 @@
 #include <s1o/initialization_data/mapped_data.hpp>
 
 #include <string>
+#include <iterator>
 #include <algorithm>
 
 namespace s1o {

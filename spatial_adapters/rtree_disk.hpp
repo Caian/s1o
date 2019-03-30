@@ -40,6 +40,7 @@
 
 #include <string>
 #include <vector>
+#include <iterator>
 #include <algorithm>
 
 namespace s1o {
