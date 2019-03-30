@@ -69,12 +69,12 @@ struct rtree_disk_slim
  * @brief The implemnetation of the rtree spatial adapter.
  *
  * @tparam TData The type of the data stored in the structure.
- * @tparam TSval The type of the individual spatial coordinates.
+ * @tparam TSVal The type of the individual spatial coordinates.
  * @tparam NSDims The number of spatial dimensions of the data.
  */
 template <
     typename TData,
-    typename TSval,
+    typename TSVal,
     unsigned int NSDims
     >
 struct spatial_adapter_impl
@@ -84,13 +84,13 @@ struct spatial_adapter_impl
     static const bool supports_element_pair = false;
 
     /** The specialization of the current type. */
-    typedef spatial_adapter_impl<TData, TSval, NSDims> this_type;
+    typedef spatial_adapter_impl<TData, TSVal, NSDims> this_type;
 
     /** The number of spatial dimensions used to locate the date. */
     static const unsigned int num_spatial_dims = NSDims;
 
     /** The type used to represent the spatial variables. */
-    typedef TSval spatial_value_type;
+    typedef TSVal spatial_value_type;
 
     /** Create a memory-mapped allocator so the operations in the tree happen
         directly on disk. */
