@@ -24,8 +24,6 @@
 
 #include <s1o/types.hpp>
 #include <s1o/exceptions.hpp>
-#include <s1o/queries/nearest.hpp>
-#include <s1o/queries/closed_interval.hpp>
 #include <s1o/helpers/basic_callback.hpp>
 #include <s1o/helpers/mapped_file_helper.hpp>
 #include <s1o/traits/spatial_point_type.hpp>
@@ -34,7 +32,6 @@
 #include <s1o/traits/spatial_storage_iterator_type.hpp>
 #include <s1o/traits/spatial_storage_query_iterator_type.hpp>
 #include <s1o/traits/spatial_storage_update_iterator_type.hpp>
-#include <s1o/transforms/transform_get_tuple_element.hpp>
 #include <s1o/initialization_data/default_data.hpp>
 #include <s1o/initialization_data/mapped_data.hpp>
 
