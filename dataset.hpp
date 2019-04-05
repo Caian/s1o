@@ -3659,10 +3659,10 @@ public:
      * pairs inside a hypercube formed by the specified points, at data
      * slot 0.
      *
-     * @param minpoint The corner with the smallest coordinates of the
-     * hypercube.
-     * @param maxpoint The corner with the largest coordinates of the
-     * hypercube.
+     * @param minpoint The corner of the hypercube with the smallest
+     * coordinate values.
+     * @param maxpoint The corner of the hypercube with the largest
+     * coordinate values.
      * @param begin The iterator to the beginning of the metadata-data pairs
      * inside a hypercube formed by the specified points, at data slot 0.
      * @param end The iterator to the end of the metadata-data pairs inside a
@@ -3691,10 +3691,10 @@ public:
      * pairs inside a hypercube formed by the specified points, at data
      * slot 0.
      *
-     * @param minpoint The corner with the smallest coordinates of the
-     * hypercube.
-     * @param maxpoint The corner with the largest coordinates of the
-     * hypercube.
+     * @param minpoint The corner of the hypercube with the smallest
+     * coordinate values.
+     * @param maxpoint The corner of the hypercube with the largest
+     * coordinate values.
      *
      * @return elem_q_iterator_pair A pair of iterators pointing to the
      * beginning and end of the metadata-data pairs inside a hypercube formed
@@ -3721,10 +3721,10 @@ public:
      * pairs inside a hypercube formed by the specified points, with data slot
      * selection.
      *
-     * @param minpoint The corner with the smallest coordinates of the
-     * hypercube.
-     * @param maxpoint The corner with the largest coordinates of the
-     * hypercube.
+     * @param minpoint The corner of the hypercube with the smallest
+     * coordinate values.
+     * @param maxpoint The corner of the hypercube with the largest
+     * coordinate values.
      * @param slot The slot of data to iterate over.
      * @param begin The iterator to the beginning of the metadata-data pairs
      * inside a hypercube formed by the specified points, with data slot
@@ -3759,10 +3759,10 @@ public:
      * pairs inside a hypercube formed by the specified points, with data slot
      * selection.
      *
-     * @param minpoint The corner with the smallest coordinates of the
-     * hypercube.
-     * @param maxpoint The corner with the largest coordinates of the
-     * hypercube.
+     * @param minpoint The corner of the hypercube with the smallest
+     * coordinate values.
+     * @param maxpoint The corner of the hypercube with the largest
+     * coordinate values.
      * @param slot The slot of data to iterate over.
      *
      * @return elem_q_iterator_slot_pair A pair of iterators pointing to the
@@ -3795,10 +3795,10 @@ public:
      * objects inside a hypercube formed by the specified points, with data
      * slot selection.
      *
-     * @param minpoint The corner with the smallest coordinates of the
-     * hypercube.
-     * @param maxpoint The corner with the largest coordinates of the
-     * hypercube.
+     * @param minpoint The corner of the hypercube with the smallest
+     * coordinate values.
+     * @param maxpoint The corner of the hypercube with the largest
+     * coordinate values.
      * @param begin The iterator to the beginning of the metadata objects
      * inside a hypercube formed by the specified points, with data slot
      * selection.
@@ -3828,10 +3828,10 @@ public:
      * objects inside a hypercube formed by the specified points, with data
      * slot selection.
      *
-     * @param minpoint The corner with the smallest coordinates of the
-     * hypercube.
-     * @param maxpoint The corner with the largest coordinates of the
-     * hypercube.
+     * @param minpoint The corner of the hypercube with the smallest
+     * coordinate values.
+     * @param maxpoint The corner of the hypercube with the largest
+     * coordinate values.
      *
      * @return meta_q_iterator_pair A pair of iterators pointing to the
      * beginning and end of the metadata objects inside a hypercube formed by
@@ -3869,9 +3869,6 @@ public:
      *
      * @note This method will throw an exception if the dataset is open with
      * the NO_DATA flag.
-     *
-     * @note minpoint must contain values smaller than maxpoint, otherwise
-     * there is no guarantee the query will succeed.
      */
     void query_elements(
         const spatial_point_type& point,
@@ -3901,9 +3898,6 @@ public:
      *
      * @note This method will throw an exception if the dataset is open with
      * the NO_DATA flag.
-     *
-     * @note minpoint must contain values smaller than maxpoint, otherwise
-     * there is no guarantee the query will succeed.
      */
     elem_q_iterator_pair query_elements(
         const spatial_point_type& point,
