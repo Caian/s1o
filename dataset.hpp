@@ -2440,138 +2440,6 @@ private:
             >(_spatial_adapter.send_update(_spatial_storage), this);
     }
 
-    /**
-     * @brief Get the iterators to the beginning and end of the metadata-data
-     * pairs that satisfy a set of predicates, at data slot 0.
-     *
-     * @tparam Predicates The type representing the predicates to be satisfied
-     * by the elements in the storage.
-     *
-     * @param predicates The predicates to be satisfied by the elements in the
-     * storage.
-     * @param begin The iterator to the beginning of the metadata-data pairs
-     * that satisfy a set of predicates, at data slot 0.
-     * @param end The iterator to the end of the metadata-data pairs  that
-     * satisfy a set of predicates, at data slot 0.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the RWP flag.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the NO_DATA flag.
-     */
-    template<typename Predicates>
-    void _query_elements(
-        const Predicates& predicates,
-        elem_q_iterator& begin,
-        elem_q_iterator& end
-    ) const
-    {
-        assert_has_location_data();
-        assert_has_data();
-
-        spatial_storage_query_iterator qbegin, qend;
-        _spatial_adapter.query(_spatial_storage, predicates, qbegin, qend);
-
-        begin = iter_builder::template construct_in_iterator<
-            typename iter_builder::elem_q_iterator,
-            typename iter_builder::transform_q_get_elem
-            >(qbegin, this);
-
-        end = iter_builder::template construct_in_iterator<
-            typename iter_builder::elem_q_iterator,
-            typename iter_builder::transform_q_get_elem
-            >(qend, this);
-    }
-
-    /**
-     * @brief Get the iterators to the beginning and end of the metadata-data
-     * pairs that satisfy a set of predicates, with data slot selection.
-     *
-     * @tparam Predicates The type representing the predicates to be satisfied
-     * by the elements in the storage.
-     *
-     * @param predicates The predicates to be satisfied by the elements in the
-     * storage.
-     * @param slot The slot of data to iterate over.
-     * @param begin The iterator to the beginning of the metadata-data pairs
-     * that satisfy a set of predicates, with data slot selection.
-     * @param end The iterator to the end of the metadata-data pairs that
-     * satisfy a set of predicates, with data slot selection.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the RWP flag.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the NO_DATA flag.
-     */
-    template<typename Predicates>
-    inline void _query_elements(
-        const Predicates& predicates,
-        size_t slot,
-        elem_q_iterator_slot& begin,
-        elem_q_iterator_slot& end
-    ) const
-    {
-        assert_has_location_data();
-        assert_has_data();
-
-        const size_t slot_off = compute_slot_offset(slot);
-
-        spatial_storage_query_iterator qbegin, qend;
-        _spatial_adapter.query(_spatial_storage, predicates, qbegin, qend);
-
-        begin = iter_builder::template construct_in_iterator<
-            typename iter_builder::elem_q_iterator_slot,
-            typename iter_builder::transform_q_get_elem_slot
-            >(qbegin, this, slot_off);
-
-        end = iter_builder::template construct_in_iterator<
-            typename iter_builder::elem_q_iterator_slot,
-            typename iter_builder::transform_q_get_elem_slot
-            >(qend, this, slot_off);
-    }
-
-    /**
-     * @brief Get the iterators to the beginning and end of the metadata
-     * objects that satisfy a set of predicates.
-     *
-     * @tparam Predicates The type representing the predicates to be satisfied
-     * by the elements in the storage.
-     *
-     * @param predicates The predicates to be satisfied by the elements in the
-     * storage.
-     * @param begin The iterator to the beginning of the metadata objects that
-     * satisfy a set of predicates.
-     * @param end The iterator to the end of the metadata objects that satisfy
-     * a set of predicates.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the RWP flag.
-     */
-    template<typename Predicates>
-    void _begin_query_metadata(
-        const Predicates& predicates,
-        meta_q_iterator& begin,
-        meta_q_iterator& end
-    ) const
-    {
-        assert_has_location_data();
-
-        spatial_storage_query_iterator qbegin, qend;
-        _spatial_adapter.query(_spatial_storage, predicates, qbegin, qend);
-
-        begin = iter_builder::template construct_in_iterator<
-            typename iter_builder::meta_q_iterator,
-            typename iter_builder::transform_q_get_meta
-            >(qbegin, this);
-
-        end = iter_builder::template construct_in_iterator<
-            typename iter_builder::meta_q_iterator,
-            typename iter_builder::transform_q_get_meta
-            >(qend, this);
-    }
-
 public:
 
     /**
@@ -3656,17 +3524,17 @@ public:
 
     /**
      * @brief Get the iterators to the beginning and end of the metadata-data
-     * pairs inside a hypercube formed by the specified points, at data
-     * slot 0.
+     * pairs that satisfy a set of predicates, at data slot 0.
      *
-     * @param minpoint The corner of the hypercube with the smallest
-     * coordinate values.
-     * @param maxpoint The corner of the hypercube with the largest
-     * coordinate values.
+     * @tparam Predicates The type representing the predicates to be satisfied
+     * by the elements in the storage.
+     *
+     * @param predicates The predicates to be satisfied by the elements in the
+     * storage.
      * @param begin The iterator to the beginning of the metadata-data pairs
-     * inside a hypercube formed by the specified points, at data slot 0.
-     * @param end The iterator to the end of the metadata-data pairs inside a
-     * hypercube formed by the specified points, at data slot 0.
+     * that satisfy a set of predicates, at data slot 0.
+     * @param end The iterator to the end of the metadata-data pairs  that
+     * satisfy a set of predicates, at data slot 0.
      *
      * @note This method will throw an exception if the dataset is open with
      * the RWP flag.
@@ -3674,16 +3542,28 @@ public:
      * @note This method will throw an exception if the dataset is open with
      * the NO_DATA flag.
      */
+    template<typename Predicates>
     void query_elements(
-        const spatial_point_type& minpoint,
-        const spatial_point_type& maxpoint,
+        const Predicates& predicates,
         elem_q_iterator& begin,
         elem_q_iterator& end
     ) const
     {
-        _query_elements(queries::closed_interval<
-            spatial_point_type
-            >(minpoint, maxpoint), begin, end);
+        assert_has_location_data();
+        assert_has_data();
+
+        spatial_storage_query_iterator qbegin, qend;
+        _spatial_adapter.query(_spatial_storage, predicates, qbegin, qend);
+
+        begin = iter_builder::template construct_in_iterator<
+            typename iter_builder::elem_q_iterator,
+            typename iter_builder::transform_q_get_elem
+            >(qbegin, this);
+
+        end = iter_builder::template construct_in_iterator<
+            typename iter_builder::elem_q_iterator,
+            typename iter_builder::transform_q_get_elem
+            >(qend, this);
     }
 
     /**
@@ -3691,10 +3571,11 @@ public:
      * pairs inside a hypercube formed by the specified points, at data
      * slot 0.
      *
-     * @param minpoint The corner of the hypercube with the smallest
-     * coordinate values.
-     * @param maxpoint The corner of the hypercube with the largest
-     * coordinate values.
+     * @tparam Predicates The type representing the predicates to be satisfied
+     * by the elements in the storage.
+     *
+     * @param predicates The predicates to be satisfied by the elements in the
+     * storage.
      *
      * @return elem_q_iterator_pair A pair of iterators pointing to the
      * beginning and end of the metadata-data pairs inside a hypercube formed
@@ -3706,52 +3587,62 @@ public:
      * @note This method will throw an exception if the dataset is open with
      * the NO_DATA flag.
      */
+    template<typename Predicates>
     elem_q_iterator_pair query_elements(
-        const spatial_point_type& minpoint,
-        const spatial_point_type& maxpoint
+        const Predicates& predicates
     ) const
     {
         elem_q_iterator_pair iterators;
-        query_elements(minpoint, maxpoint, iterators.first, iterators.second);
+        query_elements(predicates, iterators.first, iterators.second);
         return iterators;
     }
 
     /**
      * @brief Get the iterators to the beginning and end of the metadata-data
-     * pairs inside a hypercube formed by the specified points, with data slot
-     * selection.
+     * pairs that satisfy a set of predicates, with data slot selection.
      *
-     * @param minpoint The corner of the hypercube with the smallest
-     * coordinate values.
-     * @param maxpoint The corner of the hypercube with the largest
-     * coordinate values.
+     * @tparam Predicates The type representing the predicates to be satisfied
+     * by the elements in the storage.
+     *
+     * @param predicates The predicates to be satisfied by the elements in the
+     * storage.
      * @param slot The slot of data to iterate over.
      * @param begin The iterator to the beginning of the metadata-data pairs
-     * inside a hypercube formed by the specified points, with data slot
-     * selection.
-     * @param end The iterator to the end of the metadata-data pairs inside a
-     * hypercube formed by the specified points, with data slot selection.
+     * that satisfy a set of predicates, with data slot selection.
+     * @param end The iterator to the end of the metadata-data pairs that
+     * satisfy a set of predicates, with data slot selection.
      *
      * @note This method will throw an exception if the dataset is open with
      * the RWP flag.
      *
      * @note This method will throw an exception if the dataset is open with
      * the NO_DATA flag.
-     *
-     * @note minpoint must contain values smaller than maxpoint, otherwise
-     * there is no guarantee the query will succeed.
      */
-    void query_elements(
-        const spatial_point_type& minpoint,
-        const spatial_point_type& maxpoint,
+    template<typename Predicates>
+    inline void query_elements(
+        const Predicates& predicates,
         size_t slot,
         elem_q_iterator_slot& begin,
         elem_q_iterator_slot& end
     ) const
     {
-        _query_elements(queries::closed_interval<
-            spatial_point_type
-            >(minpoint, maxpoint), slot, begin, end);
+        assert_has_location_data();
+        assert_has_data();
+
+        const size_t slot_off = compute_slot_offset(slot);
+
+        spatial_storage_query_iterator qbegin, qend;
+        _spatial_adapter.query(_spatial_storage, predicates, qbegin, qend);
+
+        begin = iter_builder::template construct_in_iterator<
+            typename iter_builder::elem_q_iterator_slot,
+            typename iter_builder::transform_q_get_elem_slot
+            >(qbegin, this, slot_off);
+
+        end = iter_builder::template construct_in_iterator<
+            typename iter_builder::elem_q_iterator_slot,
+            typename iter_builder::transform_q_get_elem_slot
+            >(qend, this, slot_off);
     }
 
     /**
@@ -3759,11 +3650,11 @@ public:
      * pairs inside a hypercube formed by the specified points, with data slot
      * selection.
      *
-     * @param minpoint The corner of the hypercube with the smallest
-     * coordinate values.
-     * @param maxpoint The corner of the hypercube with the largest
-     * coordinate values.
-     * @param slot The slot of data to iterate over.
+     * @tparam Predicates The type representing the predicates to be satisfied
+     * by the elements in the storage.
+     *
+     * @param predicates The predicates to be satisfied by the elements in the
+     * storage.
      *
      * @return elem_q_iterator_slot_pair A pair of iterators pointing to the
      * beginning and end of the metadata-data pairs inside a hypercube formed
@@ -3778,49 +3669,55 @@ public:
      * @note minpoint must contain values smaller than maxpoint, otherwise
      * there is no guarantee the query will succeed.
      */
+    template<typename Predicates>
     elem_q_iterator_slot_pair query_elements(
-        const spatial_point_type& minpoint,
-        const spatial_point_type& maxpoint,
+        const Predicates& predicates,
         size_t slot
     ) const
     {
         elem_q_iterator_slot_pair iterators;
-        query_elements(minpoint, maxpoint, slot,
-            iterators.first, iterators.second);
+        query_elements(predicates, slot, iterators.first, iterators.second);
         return iterators;
     }
 
     /**
      * @brief Get the iterators to the beginning and end of the metadata
-     * objects inside a hypercube formed by the specified points, with data
-     * slot selection.
+     * objects that satisfy a set of predicates.
      *
-     * @param minpoint The corner of the hypercube with the smallest
-     * coordinate values.
-     * @param maxpoint The corner of the hypercube with the largest
-     * coordinate values.
-     * @param begin The iterator to the beginning of the metadata objects
-     * inside a hypercube formed by the specified points, with data slot
-     * selection.
-     * @param end The iterator to the end of the metadata objects inside a
-     * hypercube formed by the specified points, with data slot selection.
+     * @tparam Predicates The type representing the predicates to be satisfied
+     * by the elements in the storage.
+     *
+     * @param predicates The predicates to be satisfied by the elements in the
+     * storage.
+     * @param begin The iterator to the beginning of the metadata objects that
+     * satisfy a set of predicates.
+     * @param end The iterator to the end of the metadata objects that satisfy
+     * a set of predicates.
      *
      * @note This method will throw an exception if the dataset is open with
      * the RWP flag.
-     *
-     * @note minpoint must contain values smaller than maxpoint, otherwise
-     * there is no guarantee the query will succeed.
      */
+    template<typename Predicates>
     void query_metadata(
-        const spatial_point_type& minpoint,
-        const spatial_point_type& maxpoint,
+        const Predicates& predicates,
         meta_q_iterator& begin,
         meta_q_iterator& end
     ) const
     {
-        _begin_query_metadata(queries::closed_interval<
-            spatial_point_type
-            >(minpoint, maxpoint), begin, end);
+        assert_has_location_data();
+
+        spatial_storage_query_iterator qbegin, qend;
+        _spatial_adapter.query(_spatial_storage, predicates, qbegin, qend);
+
+        begin = iter_builder::template construct_in_iterator<
+            typename iter_builder::meta_q_iterator,
+            typename iter_builder::transform_q_get_meta
+            >(qbegin, this);
+
+        end = iter_builder::template construct_in_iterator<
+            typename iter_builder::meta_q_iterator,
+            typename iter_builder::transform_q_get_meta
+            >(qend, this);
     }
 
     /**
@@ -3828,10 +3725,11 @@ public:
      * objects inside a hypercube formed by the specified points, with data
      * slot selection.
      *
-     * @param minpoint The corner of the hypercube with the smallest
-     * coordinate values.
-     * @param maxpoint The corner of the hypercube with the largest
-     * coordinate values.
+     * @tparam Predicates The type representing the predicates to be satisfied
+     * by the elements in the storage.
+     *
+     * @param predicates The predicates to be satisfied by the elements in the
+     * storage.
      *
      * @return meta_q_iterator_pair A pair of iterators pointing to the
      * beginning and end of the metadata objects inside a hypercube formed by
@@ -3843,180 +3741,13 @@ public:
      * @note minpoint must contain values smaller than maxpoint, otherwise
      * there is no guarantee the query will succeed.
      */
+    template<typename Predicates>
     meta_q_iterator_pair query_metadata(
-        const spatial_point_type& minpoint,
-        const spatial_point_type& maxpoint
+        const Predicates& predicates
     ) const
     {
         meta_q_iterator_pair iterators;
-        query_metadata(minpoint, maxpoint, iterators.first, iterators.second);
-        return iterators;
-    }
-
-    /**
-     * @brief Get the iterators to the beginning and end of a set of the N
-     * metadata-data pairs nearest to a point, at data slot 0.
-     *
-     * @param point The reference point when searching for the nearest points.
-     * @param nearest The number of nearest points to retrieve.
-     * @param begin The iterator to the beginning of a set of the N
-     * metadata-data pairs nearest to a point, at data slot 0.
-     * @param end The iterator to the end of a set of the N
-     * metadata-data pairs nearest to a point, at data slot 0.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the RWP flag.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the NO_DATA flag.
-     */
-    void query_elements(
-        const spatial_point_type& point,
-        unsigned int nearest,
-        elem_q_iterator& begin,
-        elem_q_iterator& end
-    ) const
-    {
-        _query_elements(queries::nearest<
-            spatial_point_type
-            >(point, nearest), begin, end);
-    }
-
-    /**
-     * @brief Get the iterators to the beginning and end of a set of the N
-     * metadata-data pairs nearest to a point, at data slot 0.
-     *
-     * @param point The reference point when searching for the nearest points.
-     * @param nearest The number of nearest points to retrieve.
-     *
-     * @return elem_q_iterator_pair A pair of iterators pointing to the
-     * beginning and end of a set of the N metadata-data pairs nearest to a
-     * point, at data slot 0.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the RWP flag.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the NO_DATA flag.
-     */
-    elem_q_iterator_pair query_elements(
-        const spatial_point_type& point,
-        unsigned int nearest
-    ) const
-    {
-        elem_q_iterator_pair iterators;
-        query_elements(point, nearest, iterators.first, iterators.second);
-        return iterators;
-    }
-
-    /**
-     * @brief Get the iterators to the beginning and end of a set of the N
-     * metadata-data pairs nearest to a point, with data slot selection.
-     *
-     * @param point The reference point when searching for the nearest points.
-     * @param nearest The number of nearest points to retrieve.
-     * @param slot The slot of data to iterate over.
-     * @param begin The iterator to the beginning of a set of the N
-     * metadata-data pairs nearest to a point, with data slot selection.
-     * @param end The iterator to the end of a set of the N metadata-data
-     * pairs nearest to a point, with data slot selection.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the RWP flag.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the NO_DATA flag.
-     */
-    void query_elements(
-        const spatial_point_type& point,
-        unsigned int nearest,
-        size_t slot,
-        elem_q_iterator_slot& begin,
-        elem_q_iterator_slot& end
-    ) const
-    {
-        _query_elements(queries::nearest<
-            spatial_point_type
-            >(point, nearest), slot, begin, end);
-    }
-
-    /**
-     * @brief Get the iterators to the beginning and end of a set of the N
-     * metadata-data pairs nearest to a point, with data slot selection.
-     *
-     * @param point The reference point when searching for the nearest points.
-     * @param nearest The number of nearest points to retrieve.
-     * @param slot The slot of data to iterate over.
-     *
-     * @return elem_q_iterator_slot_pair A pair of iterators pointing to the
-     * beginning and end of a set of the N metadata-data pairs nearest to a
-     * point, with data slot selection.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the RWP flag.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the NO_DATA flag.
-     */
-    elem_q_iterator_slot_pair query_elements(
-        const spatial_point_type& point,
-        unsigned int nearest,
-        size_t slot
-    ) const
-    {
-        elem_q_iterator_slot_pair iterators;
-        query_elements(point, nearest, slot,
-            iterators.first, iterators.second);
-        return iterators;
-    }
-
-    /**
-     * @brief Get the iterators to the beginning and end of a set of the N
-     * metadata objects nearest to a point, with data slot selection.
-     *
-     * @param point The reference point when searching for the nearest points.
-     * @param nearest The number of nearest points to retrieve.
-     * @param begin The iterator to the beginning of a set of the N metadata
-     * objects nearest to a point, with data slot selection.
-     * @param end The iterator to the end of a set of the N metadata objects
-     * nearest to a point, with data slot selection.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the RWP flag.
-     */
-    void query_metadata(
-        const spatial_point_type& point,
-        unsigned int nearest,
-        meta_q_iterator& begin,
-        meta_q_iterator& end
-    ) const
-    {
-        _begin_query_metadata(queries::nearest<
-            spatial_point_type
-            >(point, nearest), begin, end);
-    }
-
-    /**
-     * @brief Get the iterators to the beginning and end of a set of the N
-     * metadata objects nearest to a point, with data slot selection.
-     *
-     * @param point The reference point when searching for the nearest points.
-     * @param nearest The number of nearest points to retrieve.
-     *
-     * @return meta_q_iterator_pair A pair of iterators pointing to the
-     * beginning and end of a set of the N metadata objects nearest to a point,
-     * with data slot selection.
-     *
-     * @note This method will throw an exception if the dataset is open with
-     * the RWP flag.
-     */
-    meta_q_iterator_pair query_metadata(
-        const spatial_point_type& point,
-        unsigned int nearest
-    ) const
-    {
-        meta_q_iterator_pair iterators;
-        query_metadata(point, nearest, iterators.first, iterators.second);
+        query_metadata(predicates, iterators.first, iterators.second);
         return iterators;
     }
 
@@ -4043,7 +3774,7 @@ public:
     ) const
     {
         elem_q_iterator begin, end;
-        query_elements(point, 1, begin, end);
+        query_elements(queries::make_nearest(point, 1), begin, end);
 
         if (begin == end) {
 
@@ -4127,7 +3858,7 @@ public:
     ) const
     {
         elem_q_iterator_slot begin, end;
-        query_elements(point, 1, slot, begin, end);
+        query_elements(queries::make_nearest(point, 1), slot, begin, end);
 
         if (begin == end) {
 
@@ -4206,7 +3937,7 @@ public:
     ) const
     {
         meta_q_iterator begin, end;
-        query_metadata(point, 1, begin, end);
+        query_metadata(queries::make_nearest(point, 1), begin, end);
 
         if (begin == end) {
 
