@@ -29,6 +29,8 @@ namespace queries {
 template <typename Point>
 struct nearest
 {
+    typedef Point spatial_point_type;
+
     Point point;
     unsigned int k;
 
