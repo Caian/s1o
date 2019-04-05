@@ -26,6 +26,11 @@
 namespace s1o {
 namespace queries {
 
+/**
+ * @brief The query predicate for a k-nearest neighbor search.
+ *
+ * @tparam Point The type of the spatial point.
+ */
 template <typename Point>
 struct nearest
 {
@@ -34,6 +39,12 @@ struct nearest
     Point point;
     unsigned int k;
 
+    /**
+     * @brief Construct a new nearest object.
+     *
+     * @param point The reference location when searching for neighbors.
+     * @param k The number of nearest neighbors to search.
+     */
     nearest(
         const Point& point,
         unsigned int k
@@ -43,6 +54,25 @@ struct nearest
     {
     }
 };
+
+/**
+ * @brief Create a nearest predicate.
+ *
+ * @tparam T The type of the spatial point.
+ *
+ * @param point The reference location when searching for neighbors.
+ * @param k The number of nearest neighbors to search.
+ *
+ * @return nearest<T> The nearest predicate.
+ */
+template <typename T>
+nearest<T> make_nearest(
+    const T& point,
+    unsigned int k
+)
+{
+    return nearest<T>(point, k);
+}
 
 }
 

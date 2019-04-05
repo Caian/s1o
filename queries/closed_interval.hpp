@@ -26,6 +26,11 @@
 namespace s1o {
 namespace queries {
 
+/**
+ * @brief The query predicate for a spatial interval search.
+ *
+ * @tparam Point The type of the spatial point.
+ */
 template <typename Point>
 struct closed_interval
 {
@@ -34,6 +39,14 @@ struct closed_interval
     Point point_min;
     Point point_max;
 
+    /**
+     * @brief Construct a new closed_interval object.
+     *
+     * @param point_min The corner of the hypercube with the smallest
+     * coordinate values.
+     * @param point_max The corner of the hypercube with the largest
+     * coordinate values.
+     */
     closed_interval(
         const Point& point_min,
         const Point& point_max
@@ -43,6 +56,27 @@ struct closed_interval
     {
     }
 };
+
+/**
+ * @brief Create a closed interval predicate.
+ *
+ * @tparam T The type of the spatial point.
+ *
+ * @param point_min The corner of the hypercube with the smallest
+ * coordinate values.
+ * @param point_max The corner of the hypercube with the largest
+ * coordinate values.
+ *
+ * @return closed_interval<T> The closed interval predicate.
+ */
+template <typename T>
+closed_interval<T> make_closed_interval(
+    const T& point_min,
+    const T& point_max
+)
+{
+    return closed_interval<T>(point_min, point_max);
+}
 
 }
 
