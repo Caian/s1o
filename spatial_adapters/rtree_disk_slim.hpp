@@ -310,49 +310,57 @@ struct spatial_adapter_impl
     /**
      * @brief Initialize the spatial storage with a sequence of elements.
      *
-     * @tparam ITN The type of the iterator for the sequence o element uids to
-     * be stored.
-     * @tparam ITL The type of the iterator for the sequence of spatial
-     * locations associated with each element.
+     * @tparam TMetaAdapter A helper type used to interface the metadata with
+     * the dataset.
+     * @tparam ITN The type of the iterator for the sequence of TData elements
+     * to be stored.
+     * @tparam ITM The type of the iterator for the sequence of metadata
+     * associated with each element.
      *
      * @param st The spatial storage object being initialized.
+     * @param meta_adapter The object used to retrieve information from the
+     * metadata.
      * @param data The initialization data for the spatial storage.
      * @param nodebegin The iterator pointing to the beginning of a sequence
-     * of uids to be stored.
+     * of TData objects to be stored.
      * @param nodeend The iterator pointing to after the last element of
-     * sequence of uids to be stored.
-     * @param locbegin The iterator pointing to the beginning of a sequence
-     * of spatial locations associated with each element.
-     * @param locend The iterator pointing to after the last element of a
-     * sequence of spatial locations associated with each element.
-     *
-     * @note The uid is used instead of TData because this is a slim adapter.
+     * sequence of TData objects to be stored.
+     * @param metabegin The iterator pointing to the beginning of a sequence
+     * of metadata associated with each element.
+     * @param metaend The iterator pointing to after the last element of a
+     * sequence of metadata associated with each element.
      */
-    template <typename ITN, typename ITL>
+    template <typename TMetaAdapter, typename ITN, typename ITM>
     void initialize(
         spatial_storage_type& st,
+        const TMetaAdapter& meta_adapter,
         const initialization_data::default_data& data,
         ITN nodebegin,
         ITN nodeend,
-        ITL locbegin,
-        ITL locend
+        ITM metabegin,
+        ITM metaend
     ) const
     {
         const size_t node_count = std::distance(nodebegin, nodeend);
-        const size_t loc_count = std::distance(locbegin, locend);
+        const size_t meta_count = std::distance(metabegin, metaend);
 
         // Must not happen
-        if (node_count != loc_count) {
-            EX3_THROW(location_count_mismatch_exception()
+        if (node_count != meta_count) {
+            EX3_THROW(metadata_count_mismatch_exception()
                 << expected_num_elements(node_count)
-                << actual_num_elements(loc_count));
+                << actual_num_elements(meta_count));
         }
 
         std::string rfile = get_rindex_name(data.basename);
 
-        helpers::basic_callback<rtree_adapter_impl, rtree_store, ITN, ITL>
-            callback(_adapter_impl, st._rtree, nodebegin,
-                nodeend, locbegin, locend);
+        helpers::basic_callback<
+            TMetaAdapter,
+            rtree_adapter_impl,
+            rtree_store,
+            ITN,
+            ITM
+            > callback(meta_adapter, _adapter_impl, st._rtree,
+                nodebegin, nodeend, metabegin, metaend);
 
         _file_helper.initialize(rfile, _mparams, data, _memory_prefix,
             st._mstorage, st._info.mapped_file, callback);

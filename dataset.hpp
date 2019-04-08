@@ -37,7 +37,7 @@
 #include "traits/spatial_storage_query_iterator_type.hpp"
 #include "traits/spatial_storage_update_iterator_type.hpp"
 #include "transforms/transform_ds_get_element.hpp"
-#include "transforms/transform_ds_get_location.hpp"
+#include "transforms/transform_ds_get_meta.hpp"
 #include "transforms/transform_ds_read_meta.hpp"
 #include "initialization_data/default_data.hpp"
 #include "helpers/iter_builder.hpp"
@@ -1037,10 +1037,6 @@ class dataset
         methods with slot offset. */
     friend class transform_ds_get_element_slot<this_type>;
 
-    /** Allow the transform direct access to the metadata addressing
-        methods to extract location. */
-    friend class transform_ds_get_location<this_type>;
-
 private:
 
     /** Identifies the meta file. */
@@ -1263,11 +1259,10 @@ public:
         spatial storage. */
     typedef typename iter_builder::elem_u_iterator elem_u_iterator;
 
-    /** The transform used to get the location from the metadata in the
-        dataset given its uid. */
-    typedef transform_ds_get_location<
+    /** The transform used to get the metadata in the dataset given its uid. */
+    typedef transform_ds_get_meta<
         this_type
-        > location_transform;
+        > meta_transform;
 
     /** The transform used to read the metadata from the metadata file given
         the uid of the element. */
@@ -1278,11 +1273,11 @@ public:
     /** The type of the iterator containing the spatial location of the
         elements in the dataset. */
     typedef boost::transform_iterator<
-        location_transform,
+        meta_transform,
         uid_iterator,
-        typename location_transform::reference,
-        typename location_transform::value_type
-        > node_location_iterator;
+        typename meta_transform::reference,
+        typename meta_transform::value_type
+        > node_meta_iterator;
 
     /** The type of the iterator that reads through the metadata file of the
         dataset */
@@ -2061,16 +2056,16 @@ private:
                 typename iter_builder::transform_d_get_elem
                 >(uid_end, this);
 
-        location_transform loc_transform(this);
+        meta_transform meta_transform(this);
 
-        node_location_iterator loc_begin(uid_begin, loc_transform);
-        node_location_iterator loc_end(uid_end, loc_transform);
+        node_meta_iterator meta_begin(uid_begin, meta_transform);
+        node_meta_iterator meta_end(uid_end, meta_transform);
 
         initialization_data::default_data init_data(get_basename(),
             new_ds, _fds.can_write());
 
-        _spatial_adapter.initialize(_spatial_storage, init_data,
-            elem_begin, elem_end, loc_begin, loc_end);
+        _spatial_adapter.initialize(_spatial_storage, _meta_adapter,
+            init_data, elem_begin, elem_end, meta_begin, meta_end);
 
         // Check if the data is sorted
 

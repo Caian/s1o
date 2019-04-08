@@ -24,21 +24,32 @@ namespace s1o {
 namespace helpers {
 
 /**
- * @brief functor that initializes the objects using the initialization_data
+ * @brief Functor that initializes the objects using the initialization_data
  * as parameter.
  *
- * @tparam AdapterImpl The specialization type of the spatial adapter.
+ * @tparam TMetaAdapter A helper type used to interface the metadata with the
+ * dataset.
+ * @tparam TSpatialAdapterImpl The specialization type of the spatial adapter.
  * @tparam Storage The type of the spatial storage.
  * @tparam ITN The type of the iterator for the sequence of data elements to
  * be stored in the spatial storage.
- * @tparam ITL The type of the iterator for the sequence of spatial locations
- * associated with each data element.
+ * @tparam ITM The type of the iterator for the sequence of metadata
+ * associated with each element.
  */
-template <typename AdapterImpl, typename Storage, typename ITN, typename ITL>
+template <
+    typename TMetaAdapter,
+    typename TSpatialAdapterImpl,
+    typename Storage,
+    typename ITN,
+    typename ITM
+    >
 struct basic_callback
 {
+    /** The metadata adapter of the dataset. */
+    const TMetaAdapter& _meta_adapter;
+
     /** The spatial adapter of the dataset. */
-    const AdapterImpl& _adapter;
+    const TSpatialAdapterImpl& _spatial_adapter;
 
     /** The spatial storage being initialized. */
     Storage& _storage;
@@ -51,42 +62,45 @@ struct basic_callback
         elements to be stored. */
     const ITN _nodeend;
 
-    /** The iterator pointing to the beginning of a sequence of spatial
-        locations associated with each data element. */
-    const ITL _locbegin;
+    /** The iterator pointing to the beginning of a sequence of metadata
+        associated with each data element. */
+    const ITM _metabegin;
 
     /** The iterator pointing to after the last element of a sequence of
-        spatial locations associated with each data element. */
-    const ITL _locend;
+        metadata associated with each data element. */
+    const ITM _metaend;
 
     /**
      * @brief Construct a new basic_callback object
      *
-     * @param adapter The spatial adapter of the dataset.
+     * @param meta_adapter The metadata adapter of the dataset.
+     * @param spatial_adapter The spatial adapter of the dataset.
      * @param storage The spatial storage being initialized.
      * @param nodebegin The iterator pointing to the beginning of a sequence
      * of data elements to be stored.
      * @param nodeend The iterator pointing to after the last element of
      * sequence of data elements to be stored.
-     * @param locbegin The iterator pointing to the beginning of a sequence
-     * of spatial locations associated with each data element.
-     * @param locend The iterator pointing to after the last element of a
-     * sequence of spatial locations associated with each data element.
+     * @param metabegin The iterator pointing to the beginning of a sequence of
+     * metadata associated with each data element.
+     * @param metaend The iterator pointing to after the last element of a
+     * sequence of metadata associated with each data element.
      */
     basic_callback(
-        const AdapterImpl& adapter,
+        const TMetaAdapter& meta_adapter,
+        const TSpatialAdapterImpl& spatial_adapter,
         Storage& storage,
         ITN nodebegin,
         ITN nodeend,
-        ITL locbegin,
-        ITL locend
+        ITM metabegin,
+        ITM metaend
     ) :
-        _adapter(adapter),
+        _meta_adapter(meta_adapter),
+        _spatial_adapter(spatial_adapter),
         _storage(storage),
         _nodebegin(nodebegin),
         _nodeend(nodeend),
-        _locbegin(locbegin),
-        _locend(locend)
+        _metabegin(metabegin),
+        _metaend(metaend)
     {
     }
 
@@ -102,8 +116,8 @@ struct basic_callback
         const InitData& data
     )
     {
-        _adapter.initialize(_storage, data, _nodebegin,
-            _nodeend, _locbegin, _locend);
+        _spatial_adapter.initialize(_storage, _meta_adapter, data,
+            _nodebegin, _nodeend, _metabegin, _metaend);
     }
 };
 
