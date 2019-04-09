@@ -291,42 +291,6 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaComplexEmpty)
             test::my_dataset
             >::type point;
 
-        const size_t Who = 1234;
-
-        point point1(stuff[Who].x, stuff[Who].y);
-        point point2(stuff[Who].x, stuff[Who].y);
-
-        test::my_meta_qiter it, begin, end;
-
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_metadata(
-            s1o::queries::make_closed_interval(point1, point2)));
-
-        std::set<int> found_uids;
-
-        for (it = begin; it != end; it++) {
-
-            const test::my_metadata& meta = *it;
-            ASSERT_TRUE(found_uids.insert(meta.uid).second);
-        }
-
-        ASSERT_TRUE(found_uids.size() == 1);
-        ASSERT_TRUE(*found_uids.begin() == (Who + 1));
-    }
-    catch (const std::exception& e) {
-        std::cerr
-            << boost::current_exception_diagnostic_information()
-            << std::endl;
-        FAIL();
-    }
-
-    try {
-        test::my_dataset dataset(dataset_name, 0,
-            slots, stuff.begin(), stuff.end());
-
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
-
         point point1(-0.15f, -0.29f);
         point point2(0.66f, 0.37f);
 
