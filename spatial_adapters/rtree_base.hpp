@@ -62,6 +62,17 @@ struct rtree_base
     /** The parameters used to control the tree. */
     typedef Params params_t;
 
+    /** A point for the rtree implementation. */
+    template <typename TSVal, unsigned int NSDims>
+    struct point
+    {
+        typedef boost::geometry::model::point<
+            TSVal,
+            NSDims,
+            CoordSys
+        > type;
+    };
+
 /**
  * @brief The implemnetation of the rtree spatial adapter.
  *
@@ -93,17 +104,13 @@ struct spatial_adapter_impl
     typedef TData rpair_data;
 
     /** A point for the rtree implementation. */
-    typedef boost::geometry::model::point<
+    typedef typename point<
         spatial_value_type,
-        num_spatial_dims,
-        CoordSys
-    > spatial_point_type;
+        num_spatial_dims
+        >::type spatial_point_type;
 
     /** The type used to store and retrieve content from the rtree. */
-    typedef boost::tuple<
-        spatial_point_type,
-        rpair_data
-    > rpair;
+    typedef boost::tuple<spatial_point_type, rpair_data> rpair;
 
     /** The type used to index the tree. */
     typedef helpers::rtree_indexer_byval<spatial_point_type> indexable_t;
