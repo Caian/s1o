@@ -62,18 +62,11 @@ struct rtree_disk_slim
     /** The parameters used to control the tree. */
     typedef Params params_t;
 
-    /** Create a memory-mapped allocator so the operations in the tree happen
-        directly on disk. */
-    typedef boost::interprocess::allocator<
-        void,
-        boost::interprocess::managed_mapped_file::segment_manager
-        > allocator_t;
-
     /** The base rtree adapter that handles the rtree. */
     typedef rtree_base<
         params_t,
         CoordSys,
-        allocator_t
+        helpers::mapped_file_helper::allocator_t
         > rtree_adapter;
 
     /** The parameters used to control the creation of the mapped file. */
