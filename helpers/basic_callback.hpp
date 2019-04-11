@@ -24,8 +24,8 @@ namespace s1o {
 namespace helpers {
 
 /**
- * @brief Functor that initializes the objects using the initialization_data
- * as parameter.
+ * @brief Functor that initializes a spatial storage object using the
+ * initialization_data as parameter.
  *
  * @tparam TMetaAdapter A helper type used to interface the metadata with the
  * dataset.
