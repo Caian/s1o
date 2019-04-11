@@ -62,6 +62,17 @@ struct rtree_base
     /** The parameters used to control the tree. */
     typedef Params params_t;
 
+    /** A point for the rtree implementation. */
+    template <typename TSVal, unsigned int NSDims>
+    struct point
+    {
+        typedef boost::geometry::model::point<
+            TSVal,
+            NSDims,
+            CoordSys
+        > type;
+    };
+
 /**
  * @brief The implemnetation of the rtree spatial adapter.
  *
@@ -83,7 +94,7 @@ struct spatial_adapter_impl
     /** The specialization of the current type. */
     typedef spatial_adapter_impl<TData, TSVal, NSDims> this_type;
 
-    /** The number of spatial dimensions used to locate the date. */
+    /** The number of spatial dimensions used to locate the data. */
     static const unsigned int num_spatial_dims = NSDims;
 
     /** The type used to represent the spatial variables. */
@@ -93,17 +104,13 @@ struct spatial_adapter_impl
     typedef TData rpair_data;
 
     /** A point for the rtree implementation. */
-    typedef boost::geometry::model::point<
+    typedef typename point<
         spatial_value_type,
-        num_spatial_dims,
-        CoordSys
-    > spatial_point_type;
+        num_spatial_dims
+        >::type spatial_point_type;
 
     /** The type used to store and retrieve content from the rtree. */
-    typedef boost::tuple<
-        spatial_point_type,
-        rpair_data
-    > rpair;
+    typedef boost::tuple<spatial_point_type, rpair_data> rpair;
 
     /** The type used to index the tree. */
     typedef helpers::rtree_indexer_byval<spatial_point_type> indexable_t;
@@ -452,7 +459,7 @@ struct spatial_adapter_impl
     /**
      * @brief Get the boundaries of the data stored in the spatial storage.
      *
-     * @param st The spatial storage object being initialized.
+     * @param st A reference to the spatial storage object.
      * @param minpoint The smallest coordinates in the spatial storage.
      * @param maxpoint The largest coordinates in the spatial storage.
      */
@@ -522,8 +529,8 @@ struct spatial_adapter_impl
         using namespace boost::geometry::index;
         using namespace boost::geometry::model;
 
-        const spatial_point_type point_min = predicates.point_min;
-        const spatial_point_type point_max = predicates.point_max;
+        const spatial_point_type& point_min = predicates.point_min;
+        const spatial_point_type& point_max = predicates.point_max;
 
         begin = tuple_get_second_query_iterator(st->qbegin(
             intersects(box<spatial_point_type>(point_min, point_max))
@@ -557,7 +564,7 @@ struct spatial_adapter_impl
     {
         using namespace boost::geometry::index;
 
-        const spatial_point_type point = predicates.point;
+        const spatial_point_type& point = predicates.point;
         const unsigned int k = predicates.k;
 
         begin = tuple_get_second_query_iterator(st->qbegin(

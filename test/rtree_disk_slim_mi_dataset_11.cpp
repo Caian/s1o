@@ -18,7 +18,7 @@
  * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "test_rtree_disk_slim.hpp"
+#include "test_rtree_disk_slim_mi.hpp"
 
 #include <gtest/gtest.h>
 
@@ -36,7 +36,7 @@ namespace {
 /**
  *
  */
-DATASET_TEST(MultipleSlot, QueryRangeMetaAllTight)
+DATASET_TEST(MultipleSlot, SecondQueryRangeMetaAllTightIndex1)
 
     const int X = 200;
     const int Y = 200;
@@ -55,6 +55,8 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaAllTight)
                 stuff[i].size = 10;
                 stuff[i].x = -100.0f * (ix + 1);
                 stuff[i].y = 100.0f * (iy + 1);
+                stuff[i].value1 = static_cast<short>(i-20000);
+                stuff[i].value2 = 0;
             }
         }
     }
@@ -63,16 +65,18 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaAllTight)
         test::my_dataset dataset(dataset_name, 0,
             slots, stuff.begin(), stuff.end());
 
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
+        typedef typename test::my_dataset::template
+            secondary_q_iterator<
+            test::value1_index
+            >::meta_type index_iterator;
 
-        point point1(-100.0f * (X+1), 100.0f);
-        point point2(-100.0f, 100.0f * (Y+1));
+        test::value1_index point1(-20000);
+        test::value1_index point2(N-20000-1);
 
-        test::my_meta_qiter it, begin, end;
+        index_iterator it, begin, end;
 
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_metadata(
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_metadata(
             s1o::queries::make_closed_interval(point1, point2)));
 
         std::set<int> found_uids;
@@ -102,7 +106,7 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaAllTight)
 /**
  *
  */
-DATASET_TEST(MultipleSlot, QueryRangeMetaOneTight)
+DATASET_TEST(MultipleSlot, SecondQueryRangeMetaOneTightIndex1)
 
     const int X = 200;
     const int Y = 200;
@@ -121,6 +125,8 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaOneTight)
                 stuff[i].size = 10;
                 stuff[i].x = -100.0f * (ix + 1);
                 stuff[i].y = 100.0f * (iy + 1);
+                stuff[i].value1 = static_cast<short>(i-20000);
+                stuff[i].value2 = 0;
             }
         }
     }
@@ -129,18 +135,20 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaOneTight)
         test::my_dataset dataset(dataset_name, 0,
             slots, stuff.begin(), stuff.end());
 
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
+        typedef typename test::my_dataset::template
+            secondary_q_iterator<
+            test::value1_index
+            >::meta_type index_iterator;
 
         const size_t Who = 1234;
 
-        point point1(stuff[Who].x, stuff[Who].y);
-        point point2(stuff[Who].x, stuff[Who].y);
+        test::value1_index point1(stuff[Who].value1);
+        test::value1_index point2(stuff[Who].value1);
 
-        test::my_meta_qiter it, begin, end;
+        index_iterator it, begin, end;
 
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_metadata(
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_metadata(
             s1o::queries::make_closed_interval(point1, point2)));
 
         std::set<int> found_uids;
@@ -171,7 +179,7 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaOneTight)
 /**
  *
  */
-DATASET_TEST(MultipleSlot, QueryRangeMetaComplex)
+DATASET_TEST(MultipleSlot, SecondQueryRangeMetaComplexIndex1)
 
     const int N = 40000;
     const int slots = 3;
@@ -190,22 +198,26 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaComplex)
         stuff[i].size = 10;
         stuff[i].x = 1000.0f * x;
         stuff[i].y = 1000.0f * y;
+        stuff[i].value1 = static_cast<short>(i-20000);
+        stuff[i].value2 = 0;
     }
 
     try {
         test::my_dataset dataset(dataset_name, 0,
             slots, stuff.begin(), stuff.end());
 
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
+        typedef typename test::my_dataset::template
+            secondary_q_iterator<
+            test::value1_index
+            >::meta_type index_iterator;
 
-        point point1(1.32e3f, -2.20e3f);
-        point point2(1.85e3f, -0.92e3f);
+        test::value1_index point1(-5);
+        test::value1_index point2(15);
 
-        test::my_meta_qiter it, begin, end;
+        index_iterator it, begin, end;
 
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_metadata(
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_metadata(
             s1o::queries::make_closed_interval(point1, point2)));
 
         std::set<int> found_uids;
@@ -222,24 +234,18 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaComplex)
 
             const test::my_metadata& meta = stuff[i];
 
-            float minx = point1.template get<0>();
-            float maxx = point2.template get<0>();
-            float miny = point1.template get<1>();
-            float maxy = point2.template get<1>();
+            short minval = point1.value;
+            short maxval = point2.value;
 
             if (found_uids.find(meta.uid) != found_uids.end()) {
 
-                ASSERT_TRUE(minx <= meta.x);
-                ASSERT_TRUE(maxx >= meta.x);
-                ASSERT_TRUE(miny <= meta.y);
-                ASSERT_TRUE(maxy >= meta.y);
+                ASSERT_TRUE(minval <= meta.value1);
+                ASSERT_TRUE(maxval >= meta.value1);
             }
             else {
 
-                ASSERT_FALSE(minx <= meta.x && \
-                             maxx >= meta.x && \
-                             miny <= meta.y && \
-                             maxy >= meta.y);
+                ASSERT_FALSE(minval <= meta.value1 && \
+                             maxval >= meta.value1);
             }
         }
     }
@@ -260,7 +266,7 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaComplex)
 /**
  *
  */
-DATASET_TEST(MultipleSlot, QueryRangeMetaComplexEmpty)
+DATASET_TEST(MultipleSlot, SecondQueryRangeMetaComplexEmptyIndex1)
 
     const int N = 40000;
     const int slots = 3;
@@ -279,22 +285,26 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaComplexEmpty)
         stuff[i].size = 10;
         stuff[i].x = x;
         stuff[i].y = y;
+        stuff[i].value1 = static_cast<short>(i-20000);
+        stuff[i].value2 = 0;
     }
 
     try {
         test::my_dataset dataset(dataset_name, 0,
             slots, stuff.begin(), stuff.end());
 
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
+        typedef typename test::my_dataset::template
+            secondary_q_iterator<
+            test::value1_index
+            >::meta_type index_iterator;
 
-        point point1(-0.15f, -0.29f);
-        point point2(0.66f, 0.37f);
+        test::value1_index point1(-30000);
+        test::value1_index point2(-20001);
 
-        test::my_meta_qiter it, begin, end;
+        index_iterator it, begin, end;
 
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_metadata(
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_metadata(
             s1o::queries::make_closed_interval(point1, point2)));
 
         ASSERT_TRUE(std::distance(begin, end) == 0);
@@ -318,7 +328,7 @@ DATASET_TEST(MultipleSlot, QueryRangeMetaComplexEmpty)
 /**
  *
  */
-DATASET_TEST(MultipleSlot, QueryRangeElemAllTight)
+DATASET_TEST(MultipleSlot, SecondQueryRangeElemAllTightIndex1)
 
     const int X = 200;
     const int Y = 200;
@@ -337,6 +347,8 @@ DATASET_TEST(MultipleSlot, QueryRangeElemAllTight)
                 stuff[i].size = 10;
                 stuff[i].x = -100.0f * (ix + 1);
                 stuff[i].y = 100.0f * (iy + 1);
+                stuff[i].value1 = static_cast<short>(i-20000);
+                stuff[i].value2 = 0;
             }
         }
     }
@@ -345,16 +357,18 @@ DATASET_TEST(MultipleSlot, QueryRangeElemAllTight)
         test::my_dataset dataset(dataset_name, 0,
             slots, stuff.begin(), stuff.end());
 
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
+        typedef typename test::my_dataset::template
+            secondary_q_iterator<
+            test::value1_index
+            >::elem_type index_iterator;
 
-        point point1(-100.0f * (X+1), 100.0f);
-        point point2(-100.0f, 100.0f * (Y+1));
+        test::value1_index point1(-20000);
+        test::value1_index point2(N-20000-1);
 
-        test::my_elem_qiter it, begin, end;
+        index_iterator it, begin, end;
 
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_elements(
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_elements(
             s1o::queries::make_closed_interval(point1, point2)));
 
         std::set<int> found_uids;
@@ -384,7 +398,7 @@ DATASET_TEST(MultipleSlot, QueryRangeElemAllTight)
 /**
  *
  */
-DATASET_TEST(MultipleSlot, QueryRangeElemOneTight)
+DATASET_TEST(MultipleSlot, SecondQueryRangeElemOneTightIndex1)
 
     const int X = 200;
     const int Y = 200;
@@ -403,6 +417,8 @@ DATASET_TEST(MultipleSlot, QueryRangeElemOneTight)
                 stuff[i].size = 10;
                 stuff[i].x = -100.0f * (ix + 1);
                 stuff[i].y = 100.0f * (iy + 1);
+                stuff[i].value1 = static_cast<short>(i-20000);
+                stuff[i].value2 = 0;
             }
         }
     }
@@ -411,18 +427,20 @@ DATASET_TEST(MultipleSlot, QueryRangeElemOneTight)
         test::my_dataset dataset(dataset_name, 0,
             slots, stuff.begin(), stuff.end());
 
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
+        typedef typename test::my_dataset::template
+            secondary_q_iterator<
+            test::value1_index
+            >::elem_type index_iterator;
 
         const size_t Who = 1234;
 
-        point point1(stuff[Who].x, stuff[Who].y);
-        point point2(stuff[Who].x, stuff[Who].y);
+        test::value1_index point1(stuff[Who].value1);
+        test::value1_index point2(stuff[Who].value1);
 
-        test::my_elem_qiter it, begin, end;
+        index_iterator it, begin, end;
 
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_elements(
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_elements(
             s1o::queries::make_closed_interval(point1, point2)));
 
         std::set<int> found_uids;
@@ -453,7 +471,7 @@ DATASET_TEST(MultipleSlot, QueryRangeElemOneTight)
 /**
  *
  */
-DATASET_TEST(MultipleSlot, QueryRangeElemComplex)
+DATASET_TEST(MultipleSlot, SecondQueryRangeElemComplexIndex1)
 
     const int N = 40000;
     const int slots = 3;
@@ -472,22 +490,26 @@ DATASET_TEST(MultipleSlot, QueryRangeElemComplex)
         stuff[i].size = 10;
         stuff[i].x = 1000.0f * x;
         stuff[i].y = 1000.0f * y;
+        stuff[i].value1 = static_cast<short>(i-20000);
+        stuff[i].value2 = 0;
     }
 
     try {
         test::my_dataset dataset(dataset_name, 0,
             slots, stuff.begin(), stuff.end());
 
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
+        typedef typename test::my_dataset::template
+            secondary_q_iterator<
+            test::value1_index
+            >::elem_type index_iterator;
 
-        point point1(1.32e3f, -2.20e3f);
-        point point2(1.85e3f, -0.92e3f);
+        test::value1_index point1(-5);
+        test::value1_index point2(15);
 
-        test::my_elem_qiter it, begin, end;
+        index_iterator it, begin, end;
 
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_elements(
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_elements(
             s1o::queries::make_closed_interval(point1, point2)));
 
         std::set<int> found_uids;
@@ -504,24 +526,18 @@ DATASET_TEST(MultipleSlot, QueryRangeElemComplex)
 
             const test::my_metadata& meta = stuff[i];
 
-            float minx = point1.template get<0>();
-            float maxx = point2.template get<0>();
-            float miny = point1.template get<1>();
-            float maxy = point2.template get<1>();
+            short minval = point1.value;
+            short maxval = point2.value;
 
             if (found_uids.find(meta.uid) != found_uids.end()) {
 
-                ASSERT_TRUE(minx <= meta.x);
-                ASSERT_TRUE(maxx >= meta.x);
-                ASSERT_TRUE(miny <= meta.y);
-                ASSERT_TRUE(maxy >= meta.y);
+                ASSERT_TRUE(minval <= meta.value1);
+                ASSERT_TRUE(maxval >= meta.value1);
             }
             else {
 
-                ASSERT_FALSE(minx <= meta.x && \
-                             maxx >= meta.x && \
-                             miny <= meta.y && \
-                             maxy >= meta.y);
+                ASSERT_FALSE(minval <= meta.value1 && \
+                             maxval >= meta.value1);
             }
         }
     }
@@ -542,7 +558,7 @@ DATASET_TEST(MultipleSlot, QueryRangeElemComplex)
 /**
  *
  */
-DATASET_TEST(MultipleSlot, QueryRangeElemComplexEmpty)
+DATASET_TEST(MultipleSlot, SecondQueryRangeElemComplexEmptyIndex1)
 
     const int N = 40000;
     const int slots = 3;
@@ -561,22 +577,26 @@ DATASET_TEST(MultipleSlot, QueryRangeElemComplexEmpty)
         stuff[i].size = 10;
         stuff[i].x = x;
         stuff[i].y = y;
+        stuff[i].value1 = static_cast<short>(i-20000);
+        stuff[i].value2 = 0;
     }
 
     try {
         test::my_dataset dataset(dataset_name, 0,
             slots, stuff.begin(), stuff.end());
 
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
+        typedef typename test::my_dataset::template
+            secondary_q_iterator<
+            test::value1_index
+            >::elem_type index_iterator;
 
-        point point1(-0.15f, -0.29f);
-        point point2(0.66f, 0.37f);
+        test::value1_index point1(-30000);
+        test::value1_index point2(-20001);
 
-        test::my_meta_qiter it, begin, end;
+        index_iterator it, begin, end;
 
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_metadata(
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_elements(
             s1o::queries::make_closed_interval(point1, point2)));
 
         ASSERT_TRUE(std::distance(begin, end) == 0);
@@ -600,7 +620,7 @@ DATASET_TEST(MultipleSlot, QueryRangeElemComplexEmpty)
 /**
  *
  */
-DATASET_TEST(MultipleSlot, QueryRangeElemSlotAllTight)
+DATASET_TEST(MultipleSlot, SecondQueryRangeElemSlotAllTightIndex1)
 
     const int X = 200;
     const int Y = 200;
@@ -619,6 +639,8 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotAllTight)
                 stuff[i].size = 10;
                 stuff[i].x = -100.0f * (ix + 1);
                 stuff[i].y = 100.0f * (iy + 1);
+                stuff[i].value1 = static_cast<short>(i-20000);
+                stuff[i].value2 = 0;
             }
         }
     }
@@ -627,20 +649,23 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotAllTight)
         test::my_dataset dataset(dataset_name, 0,
             slots, stuff.begin(), stuff.end());
 
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
+        typedef typename test::my_dataset::template
+            secondary_q_iterator<
+            test::value1_index
+            >::elem_slot_type index_iterator;
 
-        point point1(-100.0f * (X+1), 100.0f);
-        point point2(-100.0f, 100.0f * (Y+1));
+        test::value1_index point1(-20000);
+        test::value1_index point2(N-20000-1);
 
-        test::my_elem_qiter_s it, begin, end;
+        index_iterator it, begin, end;
 
-        ASSERT_THROW(boost::tie(begin, end) = dataset.query_elements(
+        ASSERT_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_elements(
             s1o::queries::make_closed_interval(point1, point2), slots),
             s1o::invalid_slot_exception);
 
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_elements(
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_elements(
             s1o::queries::make_closed_interval(point1, point2), 2));
 
         std::set<int> found_uids;
@@ -670,7 +695,7 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotAllTight)
 /**
  *
  */
-DATASET_TEST(MultipleSlot, QueryRangeElemSlotOneTight)
+DATASET_TEST(MultipleSlot, SecondQueryRangeElemSlotOneTightIndex1)
 
     const int X = 200;
     const int Y = 200;
@@ -689,6 +714,8 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotOneTight)
                 stuff[i].size = 10;
                 stuff[i].x = -100.0f * (ix + 1);
                 stuff[i].y = 100.0f * (iy + 1);
+                stuff[i].value1 = static_cast<short>(i-20000);
+                stuff[i].value2 = 0;
             }
         }
     }
@@ -697,22 +724,25 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotOneTight)
         test::my_dataset dataset(dataset_name, 0,
             slots, stuff.begin(), stuff.end());
 
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
+        typedef typename test::my_dataset::template
+            secondary_q_iterator<
+            test::value1_index
+            >::elem_slot_type index_iterator;
 
         const size_t Who = 1234;
 
-        point point1(stuff[Who].x, stuff[Who].y);
-        point point2(stuff[Who].x, stuff[Who].y);
+        test::value1_index point1(stuff[Who].value1);
+        test::value1_index point2(stuff[Who].value1);
 
-        test::my_elem_qiter_s it, begin, end;
+        index_iterator it, begin, end;
 
-        ASSERT_THROW(boost::tie(begin, end) = dataset.query_elements(
+        ASSERT_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_elements(
             s1o::queries::make_closed_interval(point1, point2), slots),
             s1o::invalid_slot_exception);
 
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_elements(
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_elements(
             s1o::queries::make_closed_interval(point1, point2), 2));
 
         std::set<int> found_uids;
@@ -743,7 +773,7 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotOneTight)
 /**
  *
  */
-DATASET_TEST(MultipleSlot, QueryRangeElemSlotComplex)
+DATASET_TEST(MultipleSlot, SecondQueryRangeElemSlotComplexIndex1)
 
     const int N = 40000;
     const int slots = 3;
@@ -762,26 +792,31 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotComplex)
         stuff[i].size = 10;
         stuff[i].x = 1000.0f * x;
         stuff[i].y = 1000.0f * y;
+        stuff[i].value1 = static_cast<short>(i-20000);
+        stuff[i].value2 = 0;
     }
 
     try {
         test::my_dataset dataset(dataset_name, 0,
             slots, stuff.begin(), stuff.end());
 
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
+        typedef typename test::my_dataset::template
+            secondary_q_iterator<
+            test::value1_index
+            >::elem_slot_type index_iterator;
 
-        point point1(1.32e3f, -2.20e3f);
-        point point2(1.85e3f, -0.92e3f);
+        test::value1_index point1(-5);
+        test::value1_index point2(15);
 
-        test::my_elem_qiter_s it, begin, end;
+        index_iterator it, begin, end;
 
-        ASSERT_THROW(boost::tie(begin, end) = dataset.query_elements(
+        ASSERT_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_elements(
             s1o::queries::make_closed_interval(point1, point2), slots),
             s1o::invalid_slot_exception);
 
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_elements(
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_elements(
             s1o::queries::make_closed_interval(point1, point2), 2));
 
         std::set<int> found_uids;
@@ -798,24 +833,18 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotComplex)
 
             const test::my_metadata& meta = stuff[i];
 
-            float minx = point1.template get<0>();
-            float maxx = point2.template get<0>();
-            float miny = point1.template get<1>();
-            float maxy = point2.template get<1>();
+            short minval = point1.value;
+            short maxval = point2.value;
 
             if (found_uids.find(meta.uid) != found_uids.end()) {
 
-                ASSERT_TRUE(minx <= meta.x);
-                ASSERT_TRUE(maxx >= meta.x);
-                ASSERT_TRUE(miny <= meta.y);
-                ASSERT_TRUE(maxy >= meta.y);
+                ASSERT_TRUE(minval <= meta.value1);
+                ASSERT_TRUE(maxval >= meta.value1);
             }
             else {
 
-                ASSERT_FALSE(minx <= meta.x && \
-                             maxx >= meta.x && \
-                             miny <= meta.y && \
-                             maxy >= meta.y);
+                ASSERT_FALSE(minval <= meta.value1 && \
+                             maxval >= meta.value1);
             }
         }
     }
@@ -836,7 +865,7 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotComplex)
 /**
  *
  */
-DATASET_TEST(MultipleSlot, QueryRangeElemSlotComplexEmpty)
+DATASET_TEST(MultipleSlot, SecondQueryRangeElemSlotComplexEmptyIndex1)
 
     const int N = 40000;
     const int slots = 3;
@@ -855,26 +884,31 @@ DATASET_TEST(MultipleSlot, QueryRangeElemSlotComplexEmpty)
         stuff[i].size = 10;
         stuff[i].x = x;
         stuff[i].y = y;
+        stuff[i].value1 = static_cast<short>(i-20000);
+        stuff[i].value2 = 0;
     }
 
     try {
         test::my_dataset dataset(dataset_name, 0,
             slots, stuff.begin(), stuff.end());
 
-        typedef typename s1o::traits::spatial_point_type<
-            test::my_dataset
-            >::type point;
+        typedef typename test::my_dataset::template
+            secondary_q_iterator<
+            test::value1_index
+            >::elem_slot_type index_iterator;
 
-        point point1(-0.15f, -0.29f);
-        point point2(0.66f, 0.37f);
+        test::value1_index point1(-30000);
+        test::value1_index point2(-20001);
 
-        test::my_elem_qiter_s it, begin, end;
+        index_iterator it, begin, end;
 
-        ASSERT_THROW(boost::tie(begin, end) = dataset.query_elements(
+        ASSERT_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_elements(
             s1o::queries::make_closed_interval(point1, point2), slots),
             s1o::invalid_slot_exception);
 
-        ASSERT_NO_THROW(boost::tie(begin, end) = dataset.query_elements(
+        ASSERT_NO_THROW(boost::tie(begin, end) =
+            dataset.secondary_query_elements(
             s1o::queries::make_closed_interval(point1, point2), 2));
 
         ASSERT_TRUE(std::distance(begin, end) == 0);

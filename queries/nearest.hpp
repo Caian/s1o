@@ -34,6 +34,7 @@ namespace queries {
 template <typename Point>
 struct nearest
 {
+    typedef nearest<Point> this_type;
     typedef Point spatial_point_type;
 
     Point point;
@@ -51,6 +52,19 @@ struct nearest
     ) :
         point(point),
         k(k)
+    {
+    }
+
+    /**
+     * @brief Construct a new nearest object.
+     *
+     * @param other Another nearest object to copy.
+     */
+    nearest(
+        const this_type& other
+    ) :
+        point(other.point),
+        k(other.k)
     {
     }
 };

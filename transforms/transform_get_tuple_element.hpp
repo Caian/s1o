@@ -59,7 +59,7 @@ struct transform_get_tuple_element
         const input_type& val
     ) const
     {
-        return val.template get<N>();
+        return boost::get<N>(val);
     }
 };
 

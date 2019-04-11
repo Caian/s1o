@@ -46,6 +46,12 @@ public:
     /** The segment manager that handles data allocation. */
     typedef mfile_t::segment_manager manager_t;
 
+    /** The void allocator to disk. */
+    typedef boost::interprocess::allocator<
+        void,
+        mfile_t::segment_manager
+        > allocator_t;
+
     /** The configuration parameters for the mapped file */
     struct params_t
     {

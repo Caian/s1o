@@ -20,8 +20,6 @@
 
 #include "test_rtree.hpp"
 
-#include <boost/tuple/tuple.hpp>
-
 #include <gtest/gtest.h>
 
 #include <algorithm>

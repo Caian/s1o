@@ -18,7 +18,7 @@
  * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "test_rtree_disk_slim.hpp"
+#include "test_rtree_disk_slim_mi.hpp"
 
 #include <gtest/gtest.h>
 
