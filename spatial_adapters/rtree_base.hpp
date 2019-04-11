@@ -522,8 +522,8 @@ struct spatial_adapter_impl
         using namespace boost::geometry::index;
         using namespace boost::geometry::model;
 
-        const spatial_point_type point_min = predicates.point_min;
-        const spatial_point_type point_max = predicates.point_max;
+        const spatial_point_type& point_min = predicates.point_min;
+        const spatial_point_type& point_max = predicates.point_max;
 
         begin = tuple_get_second_query_iterator(st->qbegin(
             intersects(box<spatial_point_type>(point_min, point_max))
@@ -557,7 +557,7 @@ struct spatial_adapter_impl
     {
         using namespace boost::geometry::index;
 
-        const spatial_point_type point = predicates.point;
+        const spatial_point_type& point = predicates.point;
         const unsigned int k = predicates.k;
 
         begin = tuple_get_second_query_iterator(st->qbegin(
