@@ -34,6 +34,7 @@ namespace queries {
 template <typename Point>
 struct closed_interval
 {
+    typedef closed_interval<Point> this_type;
     typedef Point spatial_point_type;
 
     Point point_min;
@@ -53,6 +54,19 @@ struct closed_interval
     ) :
         point_min(point_min),
         point_max(point_max)
+    {
+    }
+
+    /**
+     * @brief Construct a new closed_interval object.
+     *
+     * @param other Another closed_interval object to copy.
+     */
+    closed_interval(
+        const this_type& other
+    ) :
+        point_min(other.point_min),
+        point_max(other.point_max)
     {
     }
 };
