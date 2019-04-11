@@ -108,7 +108,7 @@ struct spatial_adapter_impl
         NSDims
         >::type rtree_adapter_impl;
 
-    /** The number of spatial dimensions used to locate the date. */
+    /** The number of spatial dimensions used to locate the data. */
     static const unsigned int num_spatial_dims =
         s1o::traits::num_spatial_dims<rtree_adapter_impl>::value;
 
@@ -164,7 +164,7 @@ struct spatial_adapter_impl
         initialization_info _info;
 
         /**
-         * @brief Construct a new spatial_storage_type object
+         * @brief Construct a new spatial_storage_type object.
          *
          */
         spatial_storage_type() :
@@ -175,7 +175,7 @@ struct spatial_adapter_impl
         }
 
         /**
-         * @brief Destroy the spatial_storage_type object
+         * @brief Destroy the spatial_storage_type object.
          *
          */
         ~spatial_storage_type()
@@ -373,7 +373,7 @@ struct spatial_adapter_impl
     /**
      * @brief Get the boundaries of the data stored in the spatial storage.
      *
-     * @param st The spatial storage object being initialized.
+     * @param st A reference to the spatial storage object.
      * @param minpoint The smallest coordinates in the spatial storage.
      * @param maxpoint The largest coordinates in the spatial storage.
      */
@@ -448,7 +448,7 @@ struct spatial_adapter_impl
      *
      * @param st A reference to the spatial storage object.
      *
-     * @return spatial_storage_update_iterator_type The writable iterator to
+     * @return spatial_storage_update_iterator_type The read-only iterator to
      * the beginning of the spatial storage.
      *
      * @note Slim adapters do not store pointers to dataset data so they are
@@ -466,7 +466,7 @@ struct spatial_adapter_impl
      *
      * @param st A reference to the spatial storage object.
      *
-     * @return spatial_storage_update_iterator_type The writable iterator to
+     * @return spatial_storage_update_iterator_type The read-only iterator to
      * the end of the spatial storage.
      *
      * @note Slim adapters do not store pointers to dataset data so they are

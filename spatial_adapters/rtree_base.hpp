@@ -83,7 +83,7 @@ struct spatial_adapter_impl
     /** The specialization of the current type. */
     typedef spatial_adapter_impl<TData, TSVal, NSDims> this_type;
 
-    /** The number of spatial dimensions used to locate the date. */
+    /** The number of spatial dimensions used to locate the data. */
     static const unsigned int num_spatial_dims = NSDims;
 
     /** The type used to represent the spatial variables. */
@@ -452,7 +452,7 @@ struct spatial_adapter_impl
     /**
      * @brief Get the boundaries of the data stored in the spatial storage.
      *
-     * @param st The spatial storage object being initialized.
+     * @param st A reference to the spatial storage object.
      * @param minpoint The smallest coordinates in the spatial storage.
      * @param maxpoint The largest coordinates in the spatial storage.
      */
