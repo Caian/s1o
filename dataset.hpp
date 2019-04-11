@@ -57,7 +57,7 @@
 #include <errno.h>
 
 #define S1O_VERSION_MAJOR    0
-#define S1O_VERSION_MINOR    1
+#define S1O_VERSION_MINOR    2
 #define S1O_VERSION_REVISION 0
 
 namespace s1o {
