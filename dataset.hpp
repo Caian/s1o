@@ -1457,30 +1457,6 @@ private:
     }
 
     /**
-     * @brief Compute the offset in the data file where the
-     * slot begins.
-     *
-     * @param slot The slot in the data file being accessed.
-     *
-     * @return size_t The offset in the data file where the
-     * slot begins.
-     *
-     * @note An exception is thrown if the requested slot is
-     * greater than the number of slots in the data file.
-     */
-    inline size_t compute_slot_offset(size_t slot) const
-    {
-        if (slot >= _num_slots) {
-            EX3_THROW(invalid_slot_exception()
-                << maximum_slot(_num_slots-1)
-                << requested_slot(slot)
-                << dataset_name(get_basename()));
-        }
-
-        return slot * _slot_size;
-    }
-
-    /**
      * @brief Fill the base data with hardware specific information,
      * the magic code used to identify the file, and information
      * about the data actually being stored.
@@ -2278,21 +2254,6 @@ private:
     }
 
     /**
-     * @brief Ensure that the dataset has location data.
-     *
-     */
-    inline void assert_has_location_data() const
-    {
-        // RWP means no memory mapping, which means
-        // no spatial structure, so no location data
-
-        if (_can_rwp || _spatial_adapter.empty(_spatial_storage)) {
-            EX3_THROW(location_data_unavailable_exception()
-                << dataset_name(get_basename()));
-        }
-    }
-
-    /**
      * @brief Ensure that the dataset has mapped pointers
      * for the metadata and data files.
      *
@@ -2304,18 +2265,6 @@ private:
 
         if (_can_rwp) {
             EX3_THROW(not_mmapped_exception()
-                << dataset_name(get_basename()));
-        }
-    }
-
-    /**
-     * @brief Ensure that the dataset has a valid data file.
-     *
-     */
-    inline void assert_has_data() const
-    {
-        if (_fds.no_data()) {
-            EX3_THROW(no_data_exception()
                 << dataset_name(get_basename()));
         }
     }
@@ -2433,6 +2382,59 @@ private:
             typename iter_builder::elem_u_iterator,
             typename iter_builder::transform_u_get_elem
             >(_spatial_adapter.send_update(_spatial_storage), this);
+    }
+
+protected:
+
+    /**
+     * @brief Compute the offset in the data file where the
+     * slot begins.
+     *
+     * @param slot The slot in the data file being accessed.
+     *
+     * @return size_t The offset in the data file where the
+     * slot begins.
+     *
+     * @note An exception is thrown if the requested slot is
+     * greater than the number of slots in the data file.
+     */
+    inline size_t compute_slot_offset(size_t slot) const
+    {
+        if (slot >= _num_slots) {
+            EX3_THROW(invalid_slot_exception()
+                << maximum_slot(_num_slots-1)
+                << requested_slot(slot)
+                << dataset_name(get_basename()));
+        }
+
+        return slot * _slot_size;
+    }
+
+    /**
+     * @brief Ensure that the dataset has location data.
+     *
+     */
+    inline void assert_has_location_data() const
+    {
+        // RWP means no memory mapping, which means
+        // no spatial structure, so no location data
+
+        if (_can_rwp || _spatial_adapter.empty(_spatial_storage)) {
+            EX3_THROW(location_data_unavailable_exception()
+                << dataset_name(get_basename()));
+        }
+    }
+
+    /**
+     * @brief Ensure that the dataset has a valid data file.
+     *
+     */
+    inline void assert_has_data() const
+    {
+        if (_fds.no_data()) {
+            EX3_THROW(no_data_exception()
+                << dataset_name(get_basename()));
+        }
     }
 
 public:
