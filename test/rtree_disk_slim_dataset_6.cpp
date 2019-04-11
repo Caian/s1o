@@ -20,8 +20,6 @@
 
 #include "test_rtree_disk_slim.hpp"
 
-#include <boost/tuple/tuple.hpp>
-
 #include <gtest/gtest.h>
 
 #include <algorithm>
