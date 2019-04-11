@@ -91,7 +91,7 @@ script:
   - mkdir -p "$BUILD_DIR" && pushd "$BUILD_DIR"
   # Build and run the tests
   - rm -f build.log
-  - $CXX $CXXFLAGS "$TEST_SRC_DIR"/*.cpp -o test $LDFLAGS $COVFLAGS 2>&1 | grep error
+  - $CXX $CXXFLAGS "$TEST_SRC_DIR"/*.cpp -o test $LDFLAGS $COVFLAGS 2>&1 | grep error || true
   - ./test
   - popd
 
