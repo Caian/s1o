@@ -1654,7 +1654,6 @@ private:
     {
         if (new_ds) {
 
-
             meta_base_structure base_data;
             fill_base_data(base_data);
 
