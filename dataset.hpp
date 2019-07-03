@@ -495,7 +495,7 @@ private:
         const int flags = mapping_flags;
 
         try {
-            void* const ptr = mmap_checked(0, size, prot, flags, fd, 0);
+            void* const ptr = mmap64_checked(0, size, prot, flags, fd, 0);
             return _mregion(reinterpret_cast<char*>(ptr), size);
         }
         catch (const io_exception& e) {

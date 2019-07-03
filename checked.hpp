@@ -197,7 +197,7 @@ static void unlink_checked(
 }
 
 /**
- * @brief Checked version of mmap.
+ * @brief Checked version of mmap64.
  *
  * @param addr See mmap.
  * @param length See mmap.
@@ -208,7 +208,7 @@ static void unlink_checked(
  *
  * @return void* See mmap.
  */
-static void *mmap_checked(
+static void *mmap64_checked(
     void *addr,
     size_t length,
     int prot,
@@ -217,7 +217,7 @@ static void *mmap_checked(
     off_t offset
 )
 {
-    void* ptr = mmap(addr, length, prot, flags, fd, offset);
+    void* ptr = mmap64(addr, length, prot, flags, fd, offset);
 
     if (ptr == MAP_FAILED) {
         EX3_THROW(io_exception()
